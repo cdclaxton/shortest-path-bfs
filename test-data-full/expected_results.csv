@@ -1,8 +1,8 @@
-Source entity ID,Destination entity ID,Number of hops,Path
-e-1,e-2,1,e-1|e-2
-e-8,e-11,1,e-8|e-11
-e-3,e-17,2,e-3|e-14|e-17
-e-3,e-11,2,e-3|e-8|e-11
-e-3,e-13,3,e-3|e-8|e-11|e-13
-e-6,e-15,3,e-6|e-4|e-3|e-15
-e-3,e-18,3,e-3|e-14|e-17|e-18
+Source entity ID,Destination entity ID,Number of hops,Path,Link
+e-1,e-2,1,e-1|e-2,http://192.168.99.100:8080/show/e-1,e-2
+e-8,e-11,1,e-8|e-11,http://192.168.99.100:8080/show/e-8,e-11
+e-3,e-17,2,e-3|e-14|e-17,http://192.168.99.100:8080/show/e-3,e-14,e-17
+e-3,e-11,2,e-3|e-8|e-11,http://192.168.99.100:8080/show/e-3,e-8,e-11
+e-3,e-13,3,e-3|e-8|e-11|e-13,http://192.168.99.100:8080/show/e-3,e-8,e-11,e-13
+e-6,e-15,3,e-6|e-4|e-3|e-15,http://192.168.99.100:8080/show/e-6,e-4,e-3,e-15
+e-3,e-18,3,e-3|e-14|e-17|e-18,http://192.168.99.100:8080/show/e-3,e-14,e-17,e-18

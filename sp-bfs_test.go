@@ -20,6 +20,7 @@ func TestReadConfig(t *testing.T) {
 			OutputFile:      "./test-data/results.csv",
 			OutputDelimiter: ",",
 			PathDelimiter:   "|",
+			WebAppLink:      "http://192.168.99.100:8080/show/<ENTITY_IDS>",
 		},
 	}
 
@@ -29,13 +30,14 @@ func TestReadConfig(t *testing.T) {
 }
 
 func TestNewPathResult(t *testing.T) {
-	actual := NewPathResult("e-1", "e-3", []string{"e-1", "e-20", "e-3"})
+	actual := NewPathResult("e-1", "e-3", []string{"e-1", "e-20", "e-3"}, "http://localhost/show.php?<ENTITY_IDS>&v")
 
 	expected := PathResult{
 		SourceEntityID:      "e-1",
 		DestinationEntityID: "e-3",
 		NumberOfHops:        2,
 		Path:                []string{"e-1", "e-20", "e-3"},
+		WebAppLink:          "http://localhost/show.php?e-1,e-20,e-3&v",
 	}
 
 	if !reflect.DeepEqual(expected, actual) {
@@ -44,7 +46,7 @@ func TestNewPathResult(t *testing.T) {
 }
 
 func TestPathResultDisplay(t *testing.T) {
-	pathResult := NewPathResult("e-1", "e-3", []string{"e-1", "e-20", "e-3"})
+	pathResult := NewPathResult("e-1", "e-3", []string{"e-1", "e-20", "e-3"}, "http://localhost/show.php?<ENTITY_IDS>&v")
 	actual := pathResult.display()
 	expected := "e-1 -> e-3 (2 hops): [e-1 e-20 e-3]"
 
@@ -54,9 +56,9 @@ func TestPathResultDisplay(t *testing.T) {
 }
 
 func TestPathResultToString(t *testing.T) {
-	pathResult := NewPathResult("e-1", "e-3", []string{"e-1", "e-20", "e-3"})
+	pathResult := NewPathResult("e-1", "e-3", []string{"e-1", "e-20", "e-3"}, "http://localhost/show.php?<ENTITY_IDS>&v")
 	actual := pathResult.toString(",", "|")
-	expected := "e-1,e-3,2,e-1|e-20|e-3"
+	expected := "e-1,e-3,2,e-1|e-20|e-3,http://localhost/show.php?e-1,e-20,e-3&v"
 
 	if expected != actual {
 		t.Fatalf("Expected %v, got %v\n", expected, actual)
@@ -65,7 +67,7 @@ func TestPathResultToString(t *testing.T) {
 
 func TestPathResultHeader(t *testing.T) {
 	actual := pathResultHeader(",")
-	expected := "Source entity ID,Destination entity ID,Number of hops,Path"
+	expected := "Source entity ID,Destination entity ID,Number of hops,Path,Link"
 
 	if expected != actual {
 		t.Fatalf("Expected %v, got %v\n", expected, actual)
@@ -97,6 +99,18 @@ func TestExtractEntityPairInvalid2(t *testing.T) {
 
 	if err == nil {
 		t.Fatalf("Expected an error\n")
+	}
+}
+
+func TestBuildWebAppLink(t *testing.T) {
+
+	template := "http://192.168.99.100:8080/show.php?<ENTITY_IDS>&v"
+	entityIds := []string{"e-1", "e-2"}
+	actual := buildWebAppLink(template, entityIds)
+	expected := "http://192.168.99.100:8080/show.php?e-1,e-2&v"
+
+	if expected != actual {
+		t.Fatalf("Expected URL: %v, got %v\n", expected, actual)
 	}
 }
 
@@ -155,6 +169,7 @@ func TestPerformBfs(t *testing.T) {
 		OutputFile:      "./test-data/results.csv",
 		OutputDelimiter: ",",
 		PathDelimiter:   "|",
+		WebAppLink:      "http://192.168.99.100:8080/show/<ENTITY_IDS>",
 	}
 
 	// Run BFS

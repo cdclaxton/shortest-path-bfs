@@ -22,6 +22,7 @@ type OutputConfig struct {
 	OutputFile      string `json:"output_file"`
 	OutputDelimiter string `json:"delimiter"`
 	PathDelimiter   string `json:"path_delimiter"`
+	WebAppLink      string `json:"webapp_link"`
 }
 
 // PathConfig represents the JSON config
@@ -40,6 +41,7 @@ func (c *PathConfig) display() {
 	fmt.Println("    Output file:             ", c.Output.OutputFile)
 	fmt.Println("    Delimiter:               ", c.Output.OutputDelimiter)
 	fmt.Println("    Path delimiter:          ", c.Output.PathDelimiter)
+	fmt.Println("    Web-app link template:   ", c.Output.WebAppLink)
 }
 
 // readConfig reads the JSON configuration from a file
@@ -67,15 +69,27 @@ type PathResult struct {
 	DestinationEntityID string
 	NumberOfHops        int
 	Path                []string
+	WebAppLink          string
+}
+
+// buildWebAppLink builds the web-app link
+func buildWebAppLink(template string, path []string) string {
+
+	// List of comma-separated entity IDs
+	entityIds := strings.Join(path, ",")
+
+	// Use the template to build the URL
+	return strings.Replace(template, "<ENTITY_IDS>", entityIds, -1)
 }
 
 // NewPathResult returns a PathResult based on a list of vertices
-func NewPathResult(source string, destination string, vertices []string) PathResult {
+func NewPathResult(source string, destination string, vertices []string, webAppTemplate string) PathResult {
 	return PathResult{
 		SourceEntityID:      source,
 		DestinationEntityID: destination,
 		NumberOfHops:        len(vertices) - 1,
 		Path:                vertices,
+		WebAppLink:          buildWebAppLink(webAppTemplate, vertices),
 	}
 }
 
@@ -94,6 +108,7 @@ func (r *PathResult) toString(delimiter string, pathDelimiter string) string {
 		r.DestinationEntityID,
 		strconv.Itoa(r.NumberOfHops),
 		path,
+		r.WebAppLink,
 	}
 
 	// Join the elements and return
@@ -106,6 +121,7 @@ func pathResultHeader(delimiter string) string {
 		"Destination entity ID",
 		"Number of hops",
 		"Path",
+		"Link",
 	}
 
 	// Join the elements and return
@@ -161,7 +177,7 @@ func performBfs(g *Graph, entityConfig EntityPairsConfig, outputConfig OutputCon
 		if found {
 
 			// Build the PathResult
-			result := NewPathResult(e1, e2, vertex.flatten())
+			result := NewPathResult(e1, e2, vertex.flatten(), outputConfig.WebAppLink)
 
 			// Display the result
 			fmt.Printf("[>] %v\n", result.display())

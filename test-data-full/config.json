@@ -23,6 +23,7 @@
     "max_depth": 3,
     "output_file": "./test-data-full/results.csv",
     "delimiter": ",",
-    "path_delimiter": "|"
+    "path_delimiter": "|",
+    "webapp_link": "http://192.168.99.100:8080/show/<ENTITY_IDS>"
   }
 }

@@ -15,7 +15,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
-   sodipodi:docname="graph-unipartite.svg">
+   sodipodi:docname="graph-unipartite.svg"
+   inkscape:export-filename="C:\Users\cdcla\OneDrive\Technical\Learning\Golang\go\src\github.com\cdclaxton\shortestpathbfs\images\graph-unipartite.png"
+   inkscape:export-xdpi="150"
+   inkscape:export-ydpi="150">
   <defs
      id="defs2">
     <inkscape:path-effect
@@ -86,9 +89,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.59375484"
-     inkscape:cx="463.41347"
-     inkscape:cy="596.09313"
+     inkscape:zoom="0.83969615"
+     inkscape:cx="444.15473"
+     inkscape:cy="504.94456"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
