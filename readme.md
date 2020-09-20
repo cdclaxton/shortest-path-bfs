@@ -4,13 +4,31 @@
 
 This Golang project performs a shortest path analysis using a Breadth First Search (BFS) approach. It is designed for data that represents a bipartite graph, e.g. composed of entities and documents (such as authors and academic papers). The code collapses the bipartite graph to a unipartite graph for search efficiency reasons. For example, a pair of authors could write a number of papers together, but the connectivity of the authors is more important than the papers themselves.
 
-The code contains a test case where the documents and entities are as represented in the figure below.
+The code contains a test case (in the folder `test-data-full`) where the documents and entities are as represented in the figure below.
 
 ![](./images/graph-bipartite.png)
 
 The code collapses the bipartite graph to a unipartite graph, as shown below.
 
 ![](./images/graph-unipartite.png)
+
+The bipartite graph is constructed from CSV files with the required header. An example of one such CSV file is:
+
+```
+entity_id,document_id
+e-1,d-100
+e-2,d-100
+e-3,d-200
+```
+
+The paths to try to find are expressed in the JSON file. An example of the output from the code is:
+
+| Source entity ID | Destination entity ID | Number of hops | Path      | Link                                     |
+| ---------------- | --------------------- | -------------- | --------- | ---------------------------------------- |
+| e-1              | e-2                   | 1              | e-1\|e-2  | http://192.168.99.100:8080/show/e-1,e-2  |
+| e-8              | e-11                  | 1              | e-8\|e-11 | http://192.168.99.100:8080/show/e-8,e-11 |
+
+The web-app link is configurable. If it's not required, just set `webapp_link` to an empty string in the JSON config.
 
 ## Usage
 
