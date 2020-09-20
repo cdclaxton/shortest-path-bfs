@@ -93,11 +93,13 @@ func NewPathResult(source string, destination string, vertices []string, webAppT
 	}
 }
 
+// display produces a string representation for stdout
 func (r *PathResult) display() string {
 	return fmt.Sprintf("%v -> %v (%v hops): %v",
 		r.SourceEntityID, r.DestinationEntityID, r.NumberOfHops, r.Path)
 }
 
+// toString converts a path result to delimited form for writing to file
 func (r *PathResult) toString(delimiter string, pathDelimiter string) string {
 
 	// Build a representation of the path as a string
@@ -115,6 +117,7 @@ func (r *PathResult) toString(delimiter string, pathDelimiter string) string {
 	return strings.Join(parts, delimiter)
 }
 
+// pathResultHeader returns the delimited file header
 func pathResultHeader(delimiter string) string {
 	parts := []string{
 		"Source entity ID",
@@ -141,7 +144,7 @@ func extractEntityPair(pair string, delimiter string) (string, string, error) {
 	return parts[0], parts[1], nil
 }
 
-// Perform BFS
+// performBfs performs breadth first search given a graph and config
 func performBfs(g *Graph, entityConfig EntityPairsConfig, outputConfig OutputConfig) {
 
 	// Open the output CSV file for writing
