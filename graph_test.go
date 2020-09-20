@@ -160,6 +160,26 @@ func TestFlattenThreeVertices(t *testing.T) {
 	}
 }
 
+func TestBfsRootNodeNotPresent(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+
+	found, _ := g.Bfs("c", "a", 1)
+	if found {
+		t.Fatalf("Expected not to find the vertex")
+	}
+}
+
+func TestBfsGoalNodeNotPresent(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "d")
+
+	found, _ := g.Bfs("a", "b", 3)
+	if found {
+		t.Fatalf("Expected not to find the vertex")
+	}
+}
+
 func TestBfsTwoVertices(t *testing.T) {
 	g := NewGraph()
 	g.AddUndirected("a", "b")
