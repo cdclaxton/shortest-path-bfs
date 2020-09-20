@@ -23,10 +23,11 @@ e-3,d-200
 
 The paths to try to find are expressed in the JSON file. An example of the output from the code is:
 
-| Source entity ID | Destination entity ID | Number of hops | Path      | Link                                     |
-| ---------------- | --------------------- | -------------- | --------- | ---------------------------------------- |
-| e-1              | e-2                   | 1              | e-1\|e-2  | http://192.168.99.100:8080/show/e-1,e-2  |
-| e-8              | e-11                  | 1              | e-8\|e-11 | http://192.168.99.100:8080/show/e-8,e-11 |
+| Source entity ID | Destination entity ID | Number of hops | Path                  | Link                                               |
+| ---------------- | --------------------- | -------------- | --------------------- | -------------------------------------------------- |
+| e-1              | e-2                   | 1              | e-1\|e-2              | http://192.168.99.100:8080/show/e-1,e-2            |
+| e-8              | e-11                  | 1              | e-8\|e-11             | http://192.168.99.100:8080/show/e-8,e-11           |
+| e-3              | e-18                  | 3              | e-3\|e-14\|e-17\|e-18 | http://192.168.99.100:8080/show/e-3,e-14,e-17,e-18 |
 
 The web-app link is configurable. If it's not required, just set `webapp_link` to an empty string in the JSON config.
 
