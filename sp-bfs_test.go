@@ -11,9 +11,9 @@ func TestReadConfig(t *testing.T) {
 	actual := readConfig("./test-data/test-config.json")
 	expected := PathConfig{
 		InputFiles: []string{"./test-data/entity_1.csv", "./test-data/entity_2.csv", "./test-data/entity_3.csv"},
-		EntityPairs: EntityPairsConfig{
-			PairsToFind:   []string{"e-1|e-5", "e-2|e-6"},
-			PairDelimiter: "|",
+		Entities: EntityConfig{
+			To:   []string{"e-1", "e-2"},
+			From: []string{"e-5", "e-6"},
 		},
 		Output: OutputConfig{
 			MaxDepth:        3,
@@ -147,20 +147,21 @@ func TestPerformBfs(t *testing.T) {
 	graph.AddUndirected("e-18", "e-19")
 
 	// Define entity pairs config
-	entityConfig := EntityPairsConfig{
-		PairsToFind: []string{
-			"e-1|e-2",
-			"e-1|e-3",
-			"e-8|e-11",
-			"e-3|e-17",
-			"e-3|e-11",
-			"e-3|e-13",
-			"e-6|e-15",
-			"e-3|e-18",
-			"e-3|e-19",
-			"e-12|e-16",
-		},
-		PairDelimiter: "|",
+	entityConfig := EntityConfig{
+		To: []string{"e-1",
+			"e-2",
+			"e-3",
+			"e-6",
+			"e-8"},
+		From: []string{"e-11",
+			"e-12",
+			"e-13",
+			"e-15",
+			"e-16",
+			"e-17",
+			"e-18",
+			"e-19",
+			"e-100"},
 	}
 
 	// Define output config

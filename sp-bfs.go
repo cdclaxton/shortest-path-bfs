@@ -10,10 +10,10 @@ import (
 	"strings"
 )
 
-// EntityPairsConfig represents the entity pairs to find paths for
-type EntityPairsConfig struct {
-	PairsToFind   []string `json:"pairs"`
-	PairDelimiter string   `json:"delimiter"`
+// EntityConfig represents the entity pairs to find paths for
+type EntityConfig struct {
+	To   []string `json:"to"`
+	From []string `json:"from"`
 }
 
 // OutputConfig represents the config for the output from the BFS
@@ -27,16 +27,16 @@ type OutputConfig struct {
 
 // PathConfig represents the JSON config
 type PathConfig struct {
-	InputFiles  []string          `json:"input_files"`
-	EntityPairs EntityPairsConfig `json:"entity_pairs"`
-	Output      OutputConfig      `json:"output"`
+	InputFiles []string     `json:"input_files"`
+	Entities   EntityConfig `json:"entities"`
+	Output     OutputConfig `json:"output"`
 }
 
 // display the path config
 func (c *PathConfig) display() {
 	fmt.Println("    Number of input files:   ", len(c.InputFiles))
-	fmt.Println("    Number of paths to find: ", len(c.EntityPairs.PairsToFind))
-	fmt.Println("    Pair delimiter:          ", c.EntityPairs.PairDelimiter)
+	fmt.Println("    Number of paths 'to':    ", len(c.Entities.To))
+	fmt.Println("    Number of paths 'from':  ", len(c.Entities.From))
 	fmt.Println("    Maximum depth:           ", c.Output.MaxDepth)
 	fmt.Println("    Output file:             ", c.Output.OutputFile)
 	fmt.Println("    Delimiter:               ", c.Output.OutputDelimiter)
@@ -102,7 +102,7 @@ func (r *PathResult) display() string {
 // toString converts a path result to delimited form for writing to file
 func (r *PathResult) toString(delimiter string, pathDelimiter string) string {
 
-	// Build a representation of the path as a string
+	// Build a representation of the path as a simple delimited string
 	path := strings.Join(r.Path, pathDelimiter)
 
 	parts := []string{
@@ -145,7 +145,7 @@ func extractEntityPair(pair string, delimiter string) (string, string, error) {
 }
 
 // performBfs performs breadth first search given a graph and config
-func performBfs(g *Graph, entityConfig EntityPairsConfig, outputConfig OutputConfig) {
+func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) {
 
 	// Open the output CSV file for writing
 	outputFile, err := os.Create(outputConfig.OutputFile)
@@ -157,36 +157,51 @@ func performBfs(g *Graph, entityConfig EntityPairsConfig, outputConfig OutputCon
 	// Write the header
 	fmt.Fprintln(outputFile, pathResultHeader(outputConfig.OutputDelimiter))
 
-	// Walk through each pair of entity IDs
-	for pairIndex, pair := range entityConfig.PairsToFind {
+	// Total number of entity pairs to check
+	totalPairs := len(entityConfig.To) * len(entityConfig.From)
+	numPairsProcessed := 0
 
-		// Provide feedback on long-running jobs
-		if pairIndex%10000 == 0 {
-			fmt.Printf("[>] Processed %v pairs of %v\n", pairIndex+1, len(entityConfig.PairsToFind))
+	for _, source := range entityConfig.To {
+
+		// Set of all vertices within reach of the source vertex
+		found, reachable := g.ReachableVertices(source, outputConfig.MaxDepth)
+
+		// If the source vertex was not found, just continue to the next vertex
+		if !found {
+			numPairsProcessed += len(entityConfig.From)
+			continue
 		}
 
-		// Extract the two entity IDs
-		e1, e2, err := extractEntityPair(pair, entityConfig.PairDelimiter)
-		if err != nil {
-			fmt.Printf("[!] Failed to parse line. %v", err)
-		}
+		for _, destination := range entityConfig.From {
 
-		//fmt.Printf("[>] Checking %v -> %v\n", e1, e2)
+			// Provide feedback on long-running jobs
+			if numPairsProcessed%10000 == 0 {
+				fmt.Printf("[>] Processed %v pairs of %v\n", numPairsProcessed, totalPairs)
+			}
 
-		// Compute the shortest path using BFS
-		found, vertex := g.Bfs(e1, e2, outputConfig.MaxDepth)
+			// Is the destination reachable from the source?
+			if reachable.Has(destination) {
 
-		// If the path could be found, add it to the output file
-		if found {
+				// Compute the shortest path using BFS
+				found, vertex := g.Bfs(source, destination, outputConfig.MaxDepth)
 
-			// Build the PathResult
-			result := NewPathResult(e1, e2, vertex.flatten(), outputConfig.WebAppLink)
+				if !found {
+					fmt.Printf("[!] Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
+				} else {
 
-			// Display the result
-			fmt.Printf("[>] %v\n", result.display())
+					// Build the PathResult
+					result := NewPathResult(source, destination, vertex.flatten(), outputConfig.WebAppLink)
 
-			// Add the result to the file
-			fmt.Fprintln(outputFile, result.toString(outputConfig.OutputDelimiter, outputConfig.PathDelimiter))
+					// Display the result
+					fmt.Printf("[>] %v\n", result.display())
+
+					// Add the result to the file
+					fmt.Fprintln(outputFile, result.toString(outputConfig.OutputDelimiter, outputConfig.PathDelimiter))
+				}
+
+			}
+
+			numPairsProcessed++
 		}
 
 	}
@@ -210,8 +225,12 @@ func PerformBfsFromConfig(configFilepath string) {
 	fmt.Printf("[>] Graph has %v vertices\n", len(graph.Nodes))
 
 	// Perform BFS
-	fmt.Printf("[>] Performing BFS on %v vertex pairs\n", len(config.EntityPairs.PairsToFind))
-	performBfs(graph, config.EntityPairs, config.Output)
+	n := len(config.Entities.To) * len(config.Entities.From)
+	fmt.Printf("[>] Performing BFS on %v vertex pairs\n", n)
+	performBfs(graph, config.Entities, config.Output)
+
+	// Complete
+	fmt.Printf("[>] Complete. Results located at: %v\n", config.Output.OutputFile)
 }
 
 func main() {

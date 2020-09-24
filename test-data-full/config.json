@@ -4,22 +4,19 @@
     "./test-data-full/entity_doc_2.csv",
     "./test-data-full/entity_doc_3.csv"
   ],
-  "entity_pairs": {
-    "pairs": [
-      "e-1|e-2",
-      "e-1|e-3",
-      "e-8|e-11",
-      "e-3|e-17",
-      "e-3|e-11",
-      "e-3|e-13",
-      "e-6|e-15",
-      "e-3|e-18",
-      "e-3|e-19",
-      "e-12|e-16",
-      "e-100|e-2",
-      "e-2|e-100"
-    ],
-    "delimiter": "|"
+  "entities": {
+    "to": ["e-1", "e-2", "e-3", "e-6", "e-8"],
+    "from": [
+      "e-11",
+      "e-12",
+      "e-13",
+      "e-15",
+      "e-16",
+      "e-17",
+      "e-18",
+      "e-19",
+      "e-100"
+    ]
   },
   "output": {
     "max_depth": 3,

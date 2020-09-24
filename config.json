@@ -4,9 +4,9 @@
     "./test-data/entity_2.csv",
     "./test-data/entity_3.csv"
   ],
-  "entity_pairs": {
-    "pairs": ["e-1|e-5", "e-3|e-11"],
-    "delimiter": "|"
+  "entities": {
+    "to": ["e-1", "e-3", "e-5", "e-11"],
+    "from": ["e-1", "e-3", "e-5", "e-11"]
   },
   "output": {
     "max_depth": 4,
