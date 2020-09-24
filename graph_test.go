@@ -293,3 +293,77 @@ func TestBfsFourVerticesTwoConnectedComponents(t *testing.T) {
 		t.Fatalf("Expected not to find the vertex")
 	}
 }
+
+func TestReachableVerticesRootNotFound(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+
+	found, _ := g.ReachableVertices("c", 1)
+
+	if found {
+		t.Fatalf("Found vertex, didn't expect to\n")
+	}
+}
+
+func TestReachableVerticesZeroSteps(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+	g.AddUndirected("b", "c")
+	g.AddUndirected("c", "d")
+
+	found, actual := g.ReachableVertices("a", 0)
+
+	if !found {
+		t.Fatalf("Expected to find vertex\n")
+	}
+
+	expected := set.New()
+	expected.Insert("a")
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("Expected %v, found %v\n", expected, actual)
+	}
+}
+
+func TestReachableVerticesOneStep(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+	g.AddUndirected("b", "c")
+	g.AddUndirected("c", "d")
+
+	found, actual := g.ReachableVertices("a", 1)
+
+	if !found {
+		t.Fatalf("Expected to find vertex\n")
+	}
+
+	expected := set.New()
+	expected.Insert("a")
+	expected.Insert("b")
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("Expected %v, found %v\n", expected, actual)
+	}
+}
+
+func TestReachableVerticesTwoSteps(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+	g.AddUndirected("b", "c")
+	g.AddUndirected("c", "d")
+
+	found, actual := g.ReachableVertices("a", 2)
+
+	if !found {
+		t.Fatalf("Expected to find vertex\n")
+	}
+
+	expected := set.New()
+	expected.Insert("a")
+	expected.Insert("b")
+	expected.Insert("c")
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("Expected %v, found %v\n", expected, actual)
+	}
+}

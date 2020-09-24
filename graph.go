@@ -77,11 +77,66 @@ func (v *Vertex) flatten() []string {
 	return lineage
 }
 
+// ReachableVertices finds all vertices reachable within m steps
+func (g *Graph) ReachableVertices(root string, maxDepth int) (bool, *set.Set) {
+
+	// Set of the identifiers of discovered vertices
+	discovered := set.New()
+	discovered.Insert(root)
+
+	// Check that the root vertex exists
+	_, present := g.Nodes[root]
+	if !present {
+		return false, nil
+	}
+
+	// Queue to hold the vertices to visit
+	q := queue.New()
+	q.Enqueue(NewVertex(root, 0))
+
+	// While there are vertices in the queue to check
+	for q.Len() > 0 {
+
+		// Take a vertex from the queue
+		v := q.Dequeue().(Vertex)
+
+		// Depth of any vertices adjacent to v
+		newDepth := v.Depth + 1
+
+		if newDepth <= maxDepth {
+
+			// Get a list of the adjacent vertices
+			w := g.AdjacentTo(v.Identifier)
+
+			// Walk through each adjacent vertex
+			for _, adjIdentifier := range w {
+
+				// If the vertex hasn't been seen before
+				if !discovered.Has(adjIdentifier) {
+
+					// Add the identifier to the set of discovered identifiers
+					discovered.Insert(adjIdentifier)
+
+					newVertex := NewVertex(adjIdentifier, newDepth)
+					newVertex.Parent = &v
+					q.Enqueue(newVertex)
+
+				}
+
+			}
+		}
+
+	}
+
+	return true, discovered
+}
+
 // Bfs performs a Breadth First Search in the graph
 func (g *Graph) Bfs(root string, goal string, maxDepth int) (bool, *Vertex) {
 
 	// Set of the identifiers of discovered vertices
 	discovered := set.New()
+	discovered.Insert(root)
 
 	// Queue to hold the vertices to visit
 	q := queue.New()
