@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // EntityConfig represents the entity pairs to find paths for
@@ -212,28 +213,41 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 func PerformBfsFromConfig(configFilepath string) {
 
 	// Read the JSON configuration
+	t0 := time.Now()
 	fmt.Println("[>] Reading configuration ...")
 	config := readConfig(configFilepath)
 	config.display()
 
 	// Read the entity-document relationships from file
 	fmt.Println("[>] Reading entity-document graph from file ...")
+	t1 := time.Now()
 	connections := ReadEntityDocumentGraph(config.InputFiles)
+	t2 := time.Now()
+	fmt.Printf("[>] Entity-document graph read in %v\n", t2.Sub(t1))
 
 	// Convert the bipartite graph to a unipartite graph
+	t3 := time.Now()
 	graph := BipartiteToUnipartite(connections)
+	t4 := time.Now()
 	fmt.Printf("[>] Graph has %v vertices\n", len(graph.Nodes))
+	fmt.Printf("[>] Bipartite to unipartite conversion completed in %v\n", t4.Sub(t3))
 
 	// Perform BFS
 	n := len(config.Entities.To) * len(config.Entities.From)
 	fmt.Printf("[>] Performing BFS on %v vertex pairs\n", n)
+	t5 := time.Now()
 	performBfs(graph, config.Entities, config.Output)
+	t6 := time.Now()
+	fmt.Printf("[>] BFS completed in %v\n", t6.Sub(t5))
 
 	// Complete
-	fmt.Printf("[>] Complete. Results located at: %v\n", config.Output.OutputFile)
+	fmt.Printf("[>] Results located at: %v\n", config.Output.OutputFile)
+	fmt.Printf("[>] Total time taken: %v\n", t6.Sub(t0))
 }
 
 func main() {
-	println("Shortest path calculator using a bipartite to unipartite transformation and the Breadth First Search algorithm")
+	println("Shortest path calculator using a bipartite to unipartite transformation")
+	println("and the Breadth First Search algorithm with reachable vertex optimisation step")
+
 	PerformBfsFromConfig("./config.json")
 }
