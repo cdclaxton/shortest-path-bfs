@@ -153,20 +153,25 @@ func (g *Graph) Bfs(root string, goal string, maxDepth int) (bool, *Vertex) {
 			return true, &v
 		}
 
-		// Get a list of the adjacent vertices
-		w := g.AdjacentTo(v.Identifier)
-		newDepth := (v.Depth + 1)
+		// Depth of any vertices adjacent to v
+		newDepth := v.Depth + 1
 
-		// Walk through each of the adjacent vertices
-		for _, adjIdentifier := range w {
+		// If the adjacent vertices are within the range
+		if newDepth <= maxDepth {
 
-			// If the vertex hasn't been seen before
-			if !discovered.Has(adjIdentifier) {
+			// Get a list of the adjacent vertices
+			w := g.AdjacentTo(v.Identifier)
 
-				// Add the identifier to the set of discovered identifiers
-				discovered.Insert(adjIdentifier)
+			// Walk through each of the adjacent vertices
+			for _, adjIdentifier := range w {
 
-				if newDepth <= maxDepth {
+				// If the vertex hasn't been seen before
+				if !discovered.Has(adjIdentifier) {
+
+					// Add the identifier to the set of discovered identifiers
+					discovered.Insert(adjIdentifier)
+
+					// Put the vertex on the queue
 					newVertex := NewVertex(adjIdentifier, newDepth)
 					newVertex.Parent = &v
 					q.Enqueue(newVertex)
