@@ -10,3 +10,7 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# Results files
+./test-data/results.csv
+./test-data-full/results.csv
