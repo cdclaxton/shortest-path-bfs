@@ -24,3 +24,16 @@ func ConvertSetToSlice(s *set.Set) []string {
 
 	return elements
 }
+
+// SliceToSet converts a slice to a set
+func SliceToSet(s []string) *set.Set {
+
+	// Create the set
+	t := set.New()
+
+	for _, value := range s {
+		t.Insert(value)
+	}
+
+	return t
+}

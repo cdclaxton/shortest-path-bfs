@@ -1,0 +1,19 @@
+{
+  "input_files": [
+    "./test-data-full-2/entity_doc_1.csv",
+    "./test-data-full-2/entity_doc_2.csv",
+    "./test-data-full-2/entity_doc_3.csv"
+  ],
+  "entities": {
+    "to": ["e-1", "e-2", "e-3"],
+    "from": ["e-4", "e-5", "e-6"],
+    "skip": ["e-2"]
+  },
+  "output": {
+    "max_depth": 3,
+    "output_file": "./test-data-full-2/results.csv",
+    "delimiter": ",",
+    "path_delimiter": "|",
+    "webapp_link": "http://192.168.99.100:8080/show/<ENTITY_IDS>"
+  }
+}

@@ -9,7 +9,8 @@ import (
 
 func TestReadEntityDocumentGraphFromFile0(t *testing.T) {
 	filepath := "./test-data/entity_0.csv"
-	result := ReadEntityDocumentGraphFromFile(filepath)
+	skipEntities := set.New()
+	result := ReadEntityDocumentGraphFromFile(filepath, skipEntities)
 
 	expected := []EntityDocument{
 		EntityDocument{
@@ -25,7 +26,8 @@ func TestReadEntityDocumentGraphFromFile0(t *testing.T) {
 
 func TestReadEntityDocumentGraphFromFile1(t *testing.T) {
 	filepath := "./test-data/entity_1.csv"
-	result := ReadEntityDocumentGraphFromFile(filepath)
+	skipEntities := set.New()
+	result := ReadEntityDocumentGraphFromFile(filepath, skipEntities)
 
 	expected := []EntityDocument{
 		EntityDocument{
@@ -47,13 +49,47 @@ func TestReadEntityDocumentGraphFromFile1(t *testing.T) {
 	}
 }
 
+func TestTestReadEntityDocumentGraphFromFile1WithSkip(t *testing.T) {
+	filepath := "./test-data/entity_3.csv"
+	skipEntities := set.New()
+	skipEntities.Insert("e-300")
+
+	result := ReadEntityDocumentGraphFromFile(filepath, skipEntities)
+
+	expected := []EntityDocument{
+		EntityDocument{
+			EntityID:   "e-301",
+			DocumentID: "doc-4",
+		},
+	}
+
+	if !reflect.DeepEqual(expected, result) {
+		t.Fatalf("Expected %v, got %v\n", expected, result)
+	}
+}
+
+func TestTestReadEntityDocumentGraphFromFile2WithSkip(t *testing.T) {
+	filepath := "./test-data/entity_3.csv"
+	skipEntities := set.New()
+	skipEntities.Insert("e-300")
+	skipEntities.Insert("e-301")
+
+	result := ReadEntityDocumentGraphFromFile(filepath, skipEntities)
+
+	if len(result) != 0 {
+		t.Fatalf("Expected list with no elements, got %v\n", len(result))
+	}
+
+}
+
 func TestReadEntityDocumentGraph(t *testing.T) {
 	filepaths := []string{
 		"./test-data/entity_2.csv",
 		"./test-data/entity_3.csv",
 	}
+	skipEntities := set.New()
 
-	result := ReadEntityDocumentGraph(filepaths)
+	result := ReadEntityDocumentGraph(filepaths, skipEntities)
 
 	expected := []EntityDocument{
 		EntityDocument{

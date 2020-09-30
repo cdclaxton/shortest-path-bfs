@@ -15,6 +15,7 @@ import (
 type EntityConfig struct {
 	To   []string `json:"to"`
 	From []string `json:"from"`
+	Skip []string `json:"skip"`
 }
 
 // OutputConfig represents the config for the output from the BFS
@@ -35,14 +36,15 @@ type PathConfig struct {
 
 // display the path config
 func (c *PathConfig) display() {
-	fmt.Println("    Number of input files:   ", len(c.InputFiles))
-	fmt.Println("    Number of paths 'to':    ", len(c.Entities.To))
-	fmt.Println("    Number of paths 'from':  ", len(c.Entities.From))
-	fmt.Println("    Maximum depth:           ", c.Output.MaxDepth)
-	fmt.Println("    Output file:             ", c.Output.OutputFile)
-	fmt.Println("    Delimiter:               ", c.Output.OutputDelimiter)
-	fmt.Println("    Path delimiter:          ", c.Output.PathDelimiter)
-	fmt.Println("    Web-app link template:   ", c.Output.WebAppLink)
+	fmt.Println("    Number of input files:      ", len(c.InputFiles))
+	fmt.Println("    Number of paths 'to':       ", len(c.Entities.To))
+	fmt.Println("    Number of paths 'from':     ", len(c.Entities.From))
+	fmt.Println("    Number of entities to skip: ", len(c.Entities.Skip))
+	fmt.Println("    Maximum depth:              ", c.Output.MaxDepth)
+	fmt.Println("    Output file:                ", c.Output.OutputFile)
+	fmt.Println("    Delimiter:                  ", c.Output.OutputDelimiter)
+	fmt.Println("    Path delimiter:             ", c.Output.PathDelimiter)
+	fmt.Println("    Web-app link template:      ", c.Output.WebAppLink)
 }
 
 // readConfig reads the JSON configuration from a file
@@ -162,7 +164,16 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 	totalPairs := len(entityConfig.To) * len(entityConfig.From)
 	numPairsProcessed := 0
 
+	// Make a set of entities to skip
+	skipEntities := SliceToSet(entityConfig.Skip)
+
 	for _, source := range entityConfig.To {
+
+		// Skip the entity if required
+		if skipEntities.Has(source) {
+			numPairsProcessed += len(entityConfig.From)
+			continue
+		}
 
 		// Set of all vertices within reach of the source vertex
 		found, reachable := g.ReachableVertices(source, outputConfig.MaxDepth)
@@ -174,6 +185,12 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 		}
 
 		for _, destination := range entityConfig.From {
+
+			// Skip the entity if required
+			if skipEntities.Has(destination) {
+				numPairsProcessed++
+				continue
+			}
 
 			// Provide feedback on long-running jobs
 			if numPairsProcessed%10000 == 0 {
@@ -221,7 +238,7 @@ func PerformBfsFromConfig(configFilepath string) {
 	// Read the entity-document relationships from file
 	fmt.Println("[>] Reading entity-document graph from file ...")
 	t1 := time.Now()
-	connections := ReadEntityDocumentGraph(config.InputFiles)
+	connections := ReadEntityDocumentGraph(config.InputFiles, SliceToSet(config.Entities.Skip))
 	fmt.Printf("[>] Entity-document graph read in %v\n", time.Now().Sub(t1))
 
 	// Convert the bipartite graph to a unipartite graph

@@ -17,7 +17,7 @@ type EntityDocument struct {
 }
 
 // ReadEntityDocumentGraphFromFile reads entity-document relationships from a file
-func ReadEntityDocumentGraphFromFile(filepath string) []EntityDocument {
+func ReadEntityDocumentGraphFromFile(filepath string, skipEntities *set.Set) []EntityDocument {
 
 	fmt.Printf("[>] Reading entity-document data from: %v\n", filepath)
 
@@ -65,7 +65,10 @@ func ReadEntityDocumentGraphFromFile(filepath string) []EntityDocument {
 			DocumentID: row[1],
 		}
 
-		connections = append(connections, docEnt)
+		if !skipEntities.Has(docEnt.EntityID) {
+			connections = append(connections, docEnt)
+		}
+
 	}
 
 	fmt.Printf("[>] Read %v rows from file %v\n", numRowsRead, filepath)
@@ -74,13 +77,13 @@ func ReadEntityDocumentGraphFromFile(filepath string) []EntityDocument {
 }
 
 // ReadEntityDocumentGraph reads the entity-document graph from file
-func ReadEntityDocumentGraph(files []string) *[]EntityDocument {
+func ReadEntityDocumentGraph(files []string, skipEntities *set.Set) *[]EntityDocument {
 
 	var allConnections []EntityDocument
 
 	// Read the connections from each file
 	for _, filePath := range files {
-		conns := ReadEntityDocumentGraphFromFile(filePath)
+		conns := ReadEntityDocumentGraphFromFile(filePath, skipEntities)
 		allConnections = append(allConnections, conns...)
 	}
 
