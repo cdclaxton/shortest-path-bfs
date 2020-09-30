@@ -14,6 +14,7 @@ func TestReadConfig(t *testing.T) {
 		Entities: EntityConfig{
 			To:   []string{"e-1", "e-2"},
 			From: []string{"e-5", "e-6"},
+			Skip: []string{},
 		},
 		Output: OutputConfig{
 			MaxDepth:        3,
@@ -162,6 +163,7 @@ func TestPerformBfs(t *testing.T) {
 			"e-18",
 			"e-19",
 			"e-100"},
+		Skip: []string{},
 	}
 
 	// Define output config
@@ -205,6 +207,27 @@ func TestPerformBfsFromConfig(t *testing.T) {
 	}
 
 	expected, err := ioutil.ReadFile("./test-data-full/expected_results.csv")
+	if err != nil {
+		t.Fatalf("Unable to find expected results\n")
+	}
+
+	if !bytes.Equal(expected, actual) {
+		t.Fatalf("Actual results differ from expected results\n")
+	}
+}
+
+func TestPerformBfsFromConfigWithSkips(t *testing.T) {
+
+	// Perform BFS using bipartite data
+	PerformBfsFromConfig("./test-data-full-2/config.json")
+
+	// Check the result
+	actual, err := ioutil.ReadFile("./test-data-full-2/results.csv")
+	if err != nil {
+		t.Fatalf("Unable to find test results\n")
+	}
+
+	expected, err := ioutil.ReadFile("./test-data-full-2/expected_results.csv")
 	if err != nil {
 		t.Fatalf("Unable to find expected results\n")
 	}
