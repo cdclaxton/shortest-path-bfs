@@ -6,7 +6,7 @@ This Golang project performs a shortest path analysis using a Breadth First Sear
 
 The code collapses the bipartite graph to a unipartite graph for search efficiency reasons. For example, a pair of authors could write a number of papers together, but the connectivity of the authors is more important than the papers themselves.
 
-Entities can be ignored when reading the graph from file to avoid finding shortest paths through nodes with certain properties, e.g. a high degree centrality. This saves the user having to pre-process the input CSV files.
+Entities can be ignored when reading the graph from file to avoid finding shortest paths through nodes with certain properties, e.g. a high betweeness centrality. This saves the user having to pre-process the input CSV files.
 
 The code contains a test case (in the folder `test-data-full`) where the documents and entities are as represented in the figure below.
 
