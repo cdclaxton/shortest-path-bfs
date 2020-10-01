@@ -166,12 +166,14 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 	// Make a set of entities to skip
 	skipEntities := SliceToSet(entityConfig.Skip)
+	numEntitiesSkipped := 0
 
 	for _, source := range entityConfig.To {
 
 		// Skip the entity if required
 		if skipEntities.Has(source) {
 			numPairsProcessed += len(entityConfig.From)
+			numEntitiesSkipped++
 			continue
 		}
 
@@ -189,6 +191,7 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 			// Skip the entity if required
 			if skipEntities.Has(destination) {
 				numPairsProcessed++
+				numEntitiesSkipped++
 				continue
 			}
 
@@ -224,6 +227,7 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 	}
 
+	fmt.Printf("[>] Number of entities skipped: %v\n", numEntitiesSkipped)
 }
 
 // PerformBfsFromConfig performs BFS based on a config file
