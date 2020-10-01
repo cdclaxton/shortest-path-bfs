@@ -1,6 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"os"
+	"strings"
+
 	"github.com/golang-collections/collections/queue"
 	"github.com/golang-collections/collections/set"
 )
@@ -182,4 +187,30 @@ func (g *Graph) Bfs(root string, goal string, maxDepth int) (bool, *Vertex) {
 
 	// The goal was not found
 	return false, nil
+}
+
+// WriteEdgeList writes the edge list to a file with the required delimiter
+func (g *Graph) WriteEdgeList(filepath string, delimiter string) {
+
+	// Open the output CSV file for writing
+	outputFile, err := os.Create(filepath)
+	if err != nil {
+		log.Fatalf("Unable to open output file %v for writing: %v", filepath, err)
+	}
+	defer outputFile.Close()
+
+	// Walk through the source vertices
+	for source, destinations := range g.Nodes {
+
+		// Walk through the set of destination vertices
+		destinations.Do(func(s interface{}) {
+
+			// Destination as a string
+			d := s.(string)
+
+			// Add the connection to the output file
+			row := strings.Join([]string{source, d}, delimiter)
+			fmt.Fprintln(outputFile, row)
+		})
+	}
 }

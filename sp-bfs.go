@@ -25,6 +25,7 @@ type OutputConfig struct {
 	OutputDelimiter string `json:"delimiter"`
 	PathDelimiter   string `json:"path_delimiter"`
 	WebAppLink      string `json:"webapp_link"`
+	UnipartiteFile  string `json:"unipartite"`
 }
 
 // PathConfig represents the JSON config
@@ -250,6 +251,12 @@ func PerformBfsFromConfig(configFilepath string) {
 	graph := BipartiteToUnipartite(connections)
 	fmt.Printf("[>] Graph has %v vertices\n", len(graph.Nodes))
 	fmt.Printf("[>] Bipartite to unipartite conversion completed in %v\n", time.Now().Sub(t2))
+
+	// Write the unipartite graph to file (if required)
+	if len(config.Output.UnipartiteFile) > 0 {
+		fmt.Printf("[>] Writing unipartite graph to file: %v\n", config.Output.UnipartiteFile)
+		graph.WriteEdgeList(config.Output.UnipartiteFile, config.Output.PathDelimiter)
+	}
 
 	// Perform BFS
 	n := len(config.Entities.To) * len(config.Entities.From)
