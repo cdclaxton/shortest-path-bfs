@@ -37,3 +37,28 @@ func SliceToSet(s []string) *set.Set {
 
 	return t
 }
+
+// SetsEqual returns true if two sets have the same elements
+func SetsEqual(set1 *set.Set, set2 *set.Set) bool {
+
+	diff1 := set1.Difference(set2)
+	diff2 := set2.Difference(set1)
+
+	return diff1.Len() == 0 && diff2.Len() == 0
+}
+
+// SlicesHaveSameElements returns true if two slices have the same elements (in any order)
+func SlicesHaveSameElements(s1 *[]string, s2 *[]string) bool {
+
+	// Check the lengths
+	if len(*s1) != len(*s2) {
+		return false
+	}
+
+	// Convert the slices to sets
+	set1 := SliceToSet(*s1)
+	set2 := SliceToSet(*s2)
+
+	// Determine if two sets are equal
+	return SetsEqual(set1, set2)
+}
