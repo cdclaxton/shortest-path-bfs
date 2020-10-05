@@ -154,7 +154,7 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 	// Open the output CSV file for writing
 	outputFile, err := os.Create(outputConfig.OutputFile)
 	if err != nil {
-		log.Fatalf("Unable to open output file %v for writing: %v", outputConfig.OutputFile, err)
+		log.Fatalf("Unable to open output file %v for writing: %v\n", outputConfig.OutputFile, err)
 	}
 	defer outputFile.Close()
 
@@ -255,7 +255,7 @@ func PerformBfsFromConfig(configFilepath string) {
 	// Write the unipartite graph to file (if required)
 	if len(config.Output.UnipartiteFile) > 0 {
 		fmt.Printf("[>] Writing unipartite graph to file: %v\n", config.Output.UnipartiteFile)
-		graph.WriteEdgeList(config.Output.UnipartiteFile, config.Output.PathDelimiter)
+		graph.WriteUndirectedEdgeList(config.Output.UnipartiteFile, config.Output.PathDelimiter)
 	}
 
 	// Perform BFS
