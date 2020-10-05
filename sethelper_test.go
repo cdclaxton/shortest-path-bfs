@@ -88,6 +88,16 @@ var slicesEqualTestCases = []SlicesEqualTestCase{
 		slice2:   []string{"a", "c"},
 		expected: false,
 	},
+	{
+		slice1:   []string{"a"},
+		slice2:   []string{"a", "b"},
+		expected: false,
+	},
+	{
+		slice1:   []string{"a", "b"},
+		slice2:   []string{"a", "b", "c"},
+		expected: false,
+	},
 }
 
 func TestSlicesHaveSameElements(t *testing.T) {
