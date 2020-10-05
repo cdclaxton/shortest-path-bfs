@@ -17,3 +17,5 @@ test-data/results-1.csv
 test-data-full/results.csv
 test-data-full-2/results.csv
 test-data/unipartite.csv
+test-writing/actual-output-1.csv
+test-writing/actual-output-2.csv

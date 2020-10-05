@@ -431,3 +431,42 @@ func TestSimplifyForUndirectedGraph4(t *testing.T) {
 		t.Errorf("Expected actual graph to be equal to the expected graph")
 	}
 }
+
+func TestWriteEdgeList(t *testing.T) {
+
+	// Construct a test directed graph
+	g := NewGraph()
+	g.AddDirected("a", "b")
+	g.AddDirected("a", "c")
+	g.AddDirected("b", "d")
+	g.AddDirected("d", "e")
+
+	// Write the graph to a text file
+	actualFilepath := "./test-writing/actual-output-1.csv"
+	g.WriteEdgeList(actualFilepath, ",")
+
+	// Check the result
+	if !FilesHaveSameContentIgnoringOrder(actualFilepath, "./test-writing/expected-output-1.csv") {
+		t.Fatalf("Actual results differ from expected results\n")
+	}
+}
+
+func TestWriteUndirectedEdgeList(t *testing.T) {
+
+	// Construct a test undirected graph
+	g := NewGraph()
+	g.AddUndirected("b", "a")
+	g.AddUndirected("b", "d")
+	g.AddUndirected("c", "b")
+	g.AddUndirected("c", "e")
+	g.AddUndirected("c", "f")
+
+	// Write the graph to a text file
+	actualFilepath := "./test-writing/actual-output-2.csv"
+	g.WriteUndirectedEdgeList(actualFilepath, ",")
+
+	// Check the result
+	if !FilesHaveSameContentIgnoringOrder(actualFilepath, "./test-writing/expected-output-2.csv") {
+		t.Fatalf("Actual results differ from expected results\n")
+	}
+}
