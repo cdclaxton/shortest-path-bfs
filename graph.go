@@ -22,6 +22,53 @@ func NewGraph() Graph {
 	}
 }
 
+// listOfKeys returns a list of keys from the Nodes data structure
+func (g *Graph) listOfKeys() []string {
+	keys := make([]string, len(g.Nodes))
+	i := 0
+
+	for k := range g.Nodes {
+		keys[i] = k
+		i++
+	}
+
+	return keys
+}
+
+// Equal determines if two graphs are equal
+func (g *Graph) Equal(g2 *Graph, debug bool) bool {
+
+	// Check the vertices
+	keys1 := g.listOfKeys()
+	keys2 := g2.listOfKeys()
+
+	if !SlicesHaveSameElements(&keys1, &keys2) {
+		if debug {
+			fmt.Println("[!] Lists of keys are different")
+			fmt.Printf("[!] Keys1: %v\n", keys1)
+			fmt.Printf("[!] Keys2: %v\n", keys2)
+		}
+		return false
+	}
+
+	// Walk through each vertex and check its connections
+	for _, vertex := range keys1 {
+		conns1 := g.Nodes[vertex]
+		conns2 := g2.Nodes[vertex]
+
+		if !SetsEqual(conns1, conns2) {
+			if debug {
+				fmt.Printf("[!] Connections different for vertex %v", vertex)
+				fmt.Printf("[!] Connections 1: %v\n", conns1)
+				fmt.Printf("[!] Connections 2: %v\n", conns2)
+			}
+			return false
+		}
+	}
+
+	return true
+}
+
 // AddDirected adds a directed connection in the graph
 func (g *Graph) AddDirected(source string, destination string) {
 
@@ -195,7 +242,7 @@ func (g *Graph) WriteEdgeList(filepath string, delimiter string) {
 	// Open the output CSV file for writing
 	outputFile, err := os.Create(filepath)
 	if err != nil {
-		log.Fatalf("Unable to open output file %v for writing: %v", filepath, err)
+		log.Fatalf("Unable to open output file %v for writing: %v\n", filepath, err)
 	}
 	defer outputFile.Close()
 
@@ -213,4 +260,40 @@ func (g *Graph) WriteEdgeList(filepath string, delimiter string) {
 			fmt.Fprintln(outputFile, row)
 		})
 	}
+}
+
+// SimplifyForUndirectedGraph simplifies the graph for undirected graphs
+func (g *Graph) SimplifyForUndirectedGraph() *Graph {
+
+	// Initialise a new graph
+	gUndirected := NewGraph()
+
+	// Walk though each node
+	for source, destinations := range g.Nodes {
+
+		// Walk through each destination vertex
+		destinations.Do(func(s interface{}) {
+
+			// Destination as a string
+			d := s.(string)
+
+			// If the destination vertex comes after the source vertex then
+			// add it to the simplified graph
+			if d > source {
+				gUndirected.AddDirected(source, d)
+			}
+		})
+	}
+
+	return &gUndirected
+}
+
+// WriteUndirectedEdgeList creates an edge list for an undirected graph
+func (g *Graph) WriteUndirectedEdgeList(filepath string, delimiter string) {
+
+	// Simplify the graph
+	simplified := g.SimplifyForUndirectedGraph()
+
+	// Write the edge lists to a file
+	simplified.WriteEdgeList(filepath, delimiter)
 }

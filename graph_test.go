@@ -10,7 +10,7 @@ import (
 func TestEmptyGraph(t *testing.T) {
 	g := NewGraph()
 	if len(g.Nodes) != 0 {
-		t.Fatalf("Expected 0 nodes, got %v\n", len(g.Nodes))
+		t.Errorf("Expected 0 nodes, got %v\n", len(g.Nodes))
 	}
 }
 
@@ -24,7 +24,7 @@ func TestAddDirectedOneEdge(t *testing.T) {
 
 	expected := set.New("d1")
 	if !reflect.DeepEqual(g.Nodes["s1"], expected) {
-		t.Fatalf("Expected %v, got %v", expected, g.Nodes["s1"])
+		t.Errorf("Expected %v, got %v", expected, g.Nodes["s1"])
 	}
 }
 
@@ -39,7 +39,7 @@ func TestAddDirectedTwoEdges(t *testing.T) {
 
 	expected := set.New("d1", "d2")
 	if !reflect.DeepEqual(g.Nodes["s1"], expected) {
-		t.Fatalf("Expected %v, got %v", expected, g.Nodes["s1"])
+		t.Errorf("Expected %v, got %v", expected, g.Nodes["s1"])
 	}
 }
 
@@ -54,12 +54,12 @@ func TestAddDirectedTwoEdgesDifferent(t *testing.T) {
 
 	expected1 := set.New("d1")
 	if !reflect.DeepEqual(g.Nodes["s1"], expected1) {
-		t.Fatalf("Expected %v, got %v", expected1, g.Nodes["s1"])
+		t.Errorf("Expected %v, got %v", expected1, g.Nodes["s1"])
 	}
 
 	expected2 := set.New("d2")
 	if !reflect.DeepEqual(g.Nodes["s2"], expected2) {
-		t.Fatalf("Expected %v, got %v", expected2, g.Nodes["s2"])
+		t.Errorf("Expected %v, got %v", expected2, g.Nodes["s2"])
 	}
 }
 
@@ -68,17 +68,17 @@ func TestAddUndirected(t *testing.T) {
 	g.AddUndirected("s1", "s2")
 
 	if len(g.Nodes) != 2 {
-		t.Fatalf("Expected 2 nodes, got %v\n", len(g.Nodes))
+		t.Errorf("Expected 2 nodes, got %v\n", len(g.Nodes))
 	}
 
 	expected1 := set.New("s2")
 	if !reflect.DeepEqual(g.Nodes["s1"], expected1) {
-		t.Fatalf("Expected %v, got %v", expected1, g.Nodes["s1"])
+		t.Errorf("Expected %v, got %v", expected1, g.Nodes["s1"])
 	}
 
 	expected2 := set.New("s1")
 	if !reflect.DeepEqual(g.Nodes["s2"], expected2) {
-		t.Fatalf("Expected %v, got %v", expected2, g.Nodes["s2"])
+		t.Errorf("Expected %v, got %v", expected2, g.Nodes["s2"])
 	}
 }
 
@@ -87,7 +87,7 @@ func TestAdjacentToNotPresent(t *testing.T) {
 	actual := g.AdjacentTo("node")
 
 	if len(actual) != 0 {
-		t.Fatalf("Expected 0 nodes, got %v", actual)
+		t.Errorf("Expected 0 nodes, got %v", actual)
 	}
 }
 
@@ -98,13 +98,13 @@ func TestAdjacentToOneNode(t *testing.T) {
 	actualFromA := g.AdjacentTo("a")
 	expectedFromA := []string{"b"}
 	if !reflect.DeepEqual(expectedFromA, actualFromA) {
-		t.Fatalf("Expected %v, got %v\n", expectedFromA, actualFromA)
+		t.Errorf("Expected %v, got %v\n", expectedFromA, actualFromA)
 	}
 
 	actualFromB := g.AdjacentTo("b")
 	expectedFromB := []string{"a"}
 	if !reflect.DeepEqual(expectedFromB, actualFromB) {
-		t.Fatalf("Expected %v, got %v\n", expectedFromB, actualFromB)
+		t.Errorf("Expected %v, got %v\n", expectedFromB, actualFromB)
 	}
 }
 
@@ -117,7 +117,7 @@ func TestAdjacentToTwoNodes(t *testing.T) {
 	actual := g.AdjacentTo("a")
 	expected := []string{"b", "c"}
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, actual)
 	}
 }
 
@@ -128,7 +128,7 @@ func TestFlattenOneVertex(t *testing.T) {
 	expected := []string{"vertex-1"}
 
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, actual)
 	}
 }
 
@@ -141,7 +141,7 @@ func TestFlattenTwoVertices(t *testing.T) {
 	expected := []string{"vertex-1", "vertex-2"}
 
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, actual)
 	}
 }
 
@@ -156,7 +156,7 @@ func TestFlattenThreeVertices(t *testing.T) {
 	expected := []string{"vertex-1", "vertex-2", "vertex-3"}
 
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, actual)
 	}
 }
 
@@ -166,7 +166,7 @@ func TestBfsRootNodeNotPresent(t *testing.T) {
 
 	found, _ := g.Bfs("c", "a", 1)
 	if found {
-		t.Fatalf("Expected not to find the vertex")
+		t.Errorf("Expected not to find the vertex")
 	}
 }
 
@@ -176,7 +176,7 @@ func TestBfsGoalNodeNotPresent(t *testing.T) {
 
 	found, _ := g.Bfs("a", "b", 3)
 	if found {
-		t.Fatalf("Expected not to find the vertex")
+		t.Errorf("Expected not to find the vertex")
 	}
 }
 
@@ -186,14 +186,14 @@ func TestBfsTwoVertices(t *testing.T) {
 
 	found, vertex := g.Bfs("a", "b", 1)
 	if !found {
-		t.Fatalf("Expected to find the vertex")
+		t.Errorf("Expected to find the vertex")
 	}
 
 	actual := vertex.flatten()
 	expected := []string{"a", "b"}
 
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, actual)
 	}
 }
 
@@ -205,31 +205,31 @@ func TestBfsThreeVertices(t *testing.T) {
 	// a -> b
 	found, vertex := g.Bfs("a", "b", 1)
 	if !found {
-		t.Fatalf("Expected to find the vertex")
+		t.Errorf("Expected to find the vertex")
 	}
 
 	actual := vertex.flatten()
 	expected := []string{"a", "b"}
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, actual)
 	}
 
 	// a -> b -> c
 	found, vertex = g.Bfs("a", "c", 2)
 	if !found {
-		t.Fatalf("Expected to find the vertex")
+		t.Errorf("Expected to find the vertex")
 	}
 
 	actual = vertex.flatten()
 	expected = []string{"a", "b", "c"}
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, actual)
 	}
 
 	// a -> b -> c (but stops searching at 1)
 	found, vertex = g.Bfs("a", "c", 1)
 	if found {
-		t.Fatalf("Expected not to find the vertex")
+		t.Errorf("Expected not to find the vertex")
 	}
 }
 
@@ -242,13 +242,13 @@ func TestBfsThreeVerticesCompletelyConnected(t *testing.T) {
 	// a -> b
 	found, vertex := g.Bfs("a", "b", 1)
 	if !found {
-		t.Fatalf("Expected to find the vertex")
+		t.Errorf("Expected to find the vertex")
 	}
 
 	actual := vertex.flatten()
 	expected := []string{"a", "b"}
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, actual)
 	}
 }
 
@@ -262,13 +262,13 @@ func TestBfsDiamondShape(t *testing.T) {
 	// a -> b -> d
 	found, vertex := g.Bfs("a", "d", 2)
 	if !found {
-		t.Fatalf("Expected to find the vertex")
+		t.Errorf("Expected to find the vertex")
 	}
 
 	actual := vertex.flatten()
 	expected := []string{"a", "b", "d"}
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, actual)
 	}
 }
 
@@ -279,18 +279,18 @@ func TestBfsFourVerticesTwoConnectedComponents(t *testing.T) {
 
 	found, vertex := g.Bfs("a", "b", 2)
 	if !found {
-		t.Fatalf("Expected to find the vertex")
+		t.Errorf("Expected to find the vertex")
 	}
 
 	actual := vertex.flatten()
 	expected := []string{"a", "b"}
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, actual)
 	}
 
 	found, vertex = g.Bfs("a", "d", 2)
 	if found {
-		t.Fatalf("Expected not to find the vertex")
+		t.Errorf("Expected not to find the vertex")
 	}
 }
 
@@ -301,7 +301,7 @@ func TestReachableVerticesRootNotFound(t *testing.T) {
 	found, _ := g.ReachableVertices("c", 1)
 
 	if found {
-		t.Fatalf("Found vertex, didn't expect to\n")
+		t.Errorf("Found vertex, didn't expect to\n")
 	}
 }
 
@@ -321,7 +321,7 @@ func TestReachableVerticesZeroSteps(t *testing.T) {
 	expected.Insert("a")
 
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, found %v\n", expected, actual)
+		t.Errorf("Expected %v, found %v\n", expected, actual)
 	}
 }
 
@@ -342,7 +342,7 @@ func TestReachableVerticesOneStep(t *testing.T) {
 	expected.Insert("b")
 
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, found %v\n", expected, actual)
+		t.Errorf("Expected %v, found %v\n", expected, actual)
 	}
 }
 
@@ -364,6 +364,70 @@ func TestReachableVerticesTwoSteps(t *testing.T) {
 	expected.Insert("c")
 
 	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, found %v\n", expected, actual)
+		t.Errorf("Expected %v, found %v\n", expected, actual)
+	}
+}
+
+func TestSimplifyForUndirectedGraph(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+
+	actual := g.SimplifyForUndirectedGraph()
+
+	expected := NewGraph()
+	expected.AddDirected("a", "b")
+
+	if !actual.Equal(&expected, false) {
+		t.Errorf("Expected actual graph to be equal to the expected graph")
+	}
+}
+
+func TestSimplifyForUndirectedGraph2(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+	g.AddUndirected("a", "c")
+
+	actual := g.SimplifyForUndirectedGraph()
+
+	expected := NewGraph()
+	expected.AddDirected("a", "b")
+	expected.AddDirected("a", "c")
+
+	if !actual.Equal(&expected, false) {
+		t.Errorf("Expected actual graph to be equal to the expected graph")
+	}
+}
+
+func TestSimplifyForUndirectedGraph3(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("b", "a")
+	g.AddUndirected("a", "c")
+
+	actual := g.SimplifyForUndirectedGraph()
+
+	expected := NewGraph()
+	expected.AddDirected("a", "b")
+	expected.AddDirected("a", "c")
+
+	if !actual.Equal(&expected, false) {
+		t.Errorf("Expected actual graph to be equal to the expected graph")
+	}
+}
+
+func TestSimplifyForUndirectedGraph4(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+	g.AddUndirected("a", "c")
+	g.AddUndirected("d", "a")
+
+	actual := g.SimplifyForUndirectedGraph()
+
+	expected := NewGraph()
+	expected.AddDirected("a", "b")
+	expected.AddDirected("a", "c")
+	expected.AddDirected("a", "d")
+
+	if !actual.Equal(&expected, false) {
+		t.Errorf("Expected actual graph to be equal to the expected graph")
 	}
 }
