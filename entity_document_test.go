@@ -20,7 +20,7 @@ func TestReadEntityDocumentGraphFromFile0(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Expected %v, got %v\n", expected, result)
+		t.Errorf("Expected %v, got %v\n", expected, result)
 	}
 }
 
@@ -45,7 +45,7 @@ func TestReadEntityDocumentGraphFromFile1(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Expected %v, got %v\n", expected, result)
+		t.Errorf("Expected %v, got %v\n", expected, result)
 	}
 }
 
@@ -64,7 +64,7 @@ func TestTestReadEntityDocumentGraphFromFile1WithSkip(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Expected %v, got %v\n", expected, result)
+		t.Errorf("Expected %v, got %v\n", expected, result)
 	}
 }
 
@@ -77,7 +77,7 @@ func TestTestReadEntityDocumentGraphFromFile2WithSkip(t *testing.T) {
 	result := ReadEntityDocumentGraphFromFile(filepath, skipEntities)
 
 	if len(result) != 0 {
-		t.Fatalf("Expected list with no elements, got %v\n", len(result))
+		t.Errorf("Expected list with no elements, got %v\n", len(result))
 	}
 
 }
@@ -115,30 +115,7 @@ func TestReadEntityDocumentGraph(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(expected, *result) {
-		t.Fatalf("Expected %v, got %v\n", expected, result)
-	}
-}
-
-func TestConvertSetToSliceNoElements(t *testing.T) {
-	s := set.New()
-
-	actual := ConvertSetToSlice(s)
-	expected := []string{}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
-	}
-}
-
-func TestConvertSetToSliceOneElement(t *testing.T) {
-	s := set.New()
-	s.Insert("a")
-
-	actual := ConvertSetToSlice(s)
-	expected := []string{"a"}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Expected %v, got %v\n", expected, actual)
+		t.Errorf("Expected %v, got %v\n", expected, result)
 	}
 }
 
@@ -160,14 +137,14 @@ func TestBipartiteToUnipartiteTwoEntities(t *testing.T) {
 	expected1 := []string{"e-2"}
 
 	if !reflect.DeepEqual(expected1, actual1) {
-		t.Fatalf("Expected %v, got %v\n", expected1, actual1)
+		t.Errorf("Expected %v, got %v\n", expected1, actual1)
 	}
 
 	actual2 := g.AdjacentTo("e-2")
 	expected2 := []string{"e-1"}
 
 	if !reflect.DeepEqual(expected2, actual2) {
-		t.Fatalf("Expected %v, got %v\n", expected2, actual2)
+		t.Errorf("Expected %v, got %v\n", expected2, actual2)
 	}
 }
 
@@ -194,13 +171,13 @@ func TestBipartiteToUnipartiteThreeEntities(t *testing.T) {
 	expected1 := []string{"e-2"}
 
 	if !reflect.DeepEqual(expected1, actual1) {
-		t.Fatalf("Expected %v, got %v\n", expected1, actual1)
+		t.Errorf("Expected %v, got %v\n", expected1, actual1)
 	}
 
 	actual2 := g.AdjacentTo("e-2")
 	expected2 := []string{"e-1"}
 
 	if !reflect.DeepEqual(expected2, actual2) {
-		t.Fatalf("Expected %v, got %v\n", expected2, actual2)
+		t.Errorf("Expected %v, got %v\n", expected2, actual2)
 	}
 }
