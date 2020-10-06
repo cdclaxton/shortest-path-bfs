@@ -46,6 +46,7 @@ func (c *PathConfig) display() {
 	fmt.Println("    Delimiter:                  ", c.Output.OutputDelimiter)
 	fmt.Println("    Path delimiter:             ", c.Output.PathDelimiter)
 	fmt.Println("    Web-app link template:      ", c.Output.WebAppLink)
+	fmt.Println("    Unipartite graph file:      ", c.Output.UnipartiteFile)
 }
 
 // readConfig reads the JSON configuration from a file
