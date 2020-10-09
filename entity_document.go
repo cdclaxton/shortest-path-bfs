@@ -115,7 +115,7 @@ func BipartiteToUnipartite(connections *[]EntityDocument) *Graph {
 			elements := ConvertSetToSlice(entIDs)
 			g.AddUndirected(elements[0], elements[1])
 		} else if entIDs.Len() > 2 {
-			fmt.Printf("Expected at most 2 links between document, found %v\n", entIDs.Len())
+			fmt.Printf("[!] Expected at most 2 links between document, found %v\n", entIDs.Len())
 		}
 	}
 

@@ -143,7 +143,7 @@ func extractEntityPair(pair string, delimiter string) (string, string, error) {
 	parts := strings.Split(pair, delimiter)
 
 	if len(parts) != 2 {
-		return "", "", fmt.Errorf("Expected 2 entity IDs, got %v in %v", len(parts), pair)
+		return "", "", fmt.Errorf("[!] Expected 2 entity IDs, got %v in %v", len(parts), pair)
 	}
 
 	return parts[0], parts[1], nil
