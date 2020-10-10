@@ -244,7 +244,7 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 				fmt.Printf("[>] Processed %v pairs of %v\n", numPairsProcessed, totalPairs)
 			}
 
-			// Is the destination reachable from the source?
+			// If the destination is reachable from the source, then find the shortest path
 			if reachable.Has(destination) {
 				findAndRecordShortestPaths(g, source, destination,
 					outputConfig, outputFile)
