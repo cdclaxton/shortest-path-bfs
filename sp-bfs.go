@@ -298,8 +298,8 @@ func PerformBfsFromConfig(configFilepath string) {
 }
 
 func main() {
-	println("Shortest path calculator using a bipartite to unipartite transformation")
-	println("and the Breadth First Search algorithm with reachable vertex optimisation step")
+	println("Shortest path calculator using a bipartite to unipartite transformation and the")
+	println("Breadth First Search and exhaustive search algorithms with reachable vertex optimisation step")
 
 	PerformBfsFromConfig("./config.json")
 }
