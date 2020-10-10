@@ -236,6 +236,81 @@ func (g *Graph) Bfs(root string, goal string, maxDepth int) (bool, *Vertex) {
 	return false, nil
 }
 
+// flattenAll flattens all of the tree nodes
+func flattenAll(paths []*TreeNode) [][]string {
+
+	flattened := [][]string{}
+
+	for _, node := range paths {
+		flattened = append(flattened, node.flatten())
+	}
+
+	return flattened
+}
+
+// AllPaths finds all the paths from root to goal up to a maximum depth
+func (g *Graph) AllPaths(root string, goal string, maxDepth int) []*TreeNode {
+
+	// Number of steps traversed from the root vertex
+	numSteps := 0
+
+	// If the goal is the root, then return without traversing the graph
+	treeNode := makeTreeNode(root, root == goal)
+	if treeNode.marked {
+		return []*TreeNode{treeNode}
+	}
+
+	// Nodes to 'spider' from
+	qCurrent := queue.New()
+	qCurrent.Enqueue(treeNode)
+
+	// Nodes to 'spider' from on the next iteration
+	qNext := queue.New()
+
+	// List of complete nodes (where goal has been found)
+	complete := []*TreeNode{}
+
+	for numSteps < maxDepth {
+
+		for qCurrent.Len() > 0 {
+
+			// Take a tree node from the queue representing a vertex
+			node := qCurrent.Dequeue().(*TreeNode)
+
+			if node.marked {
+				log.Fatal("Trying to traverse from a marked node")
+			}
+
+			// Get a list of the adjacent vertices
+			w := g.AdjacentTo(node.name)
+
+			// Walk through each of the adjacent vertices
+			for _, adjIdentifier := range w {
+
+				if !node.containsVertex(adjIdentifier) {
+
+					marked := adjIdentifier == goal
+					child := node.makeChild(adjIdentifier, marked)
+
+					if marked {
+						complete = append(complete, child)
+					} else {
+						qNext.Enqueue(child)
+					}
+				}
+
+			}
+		}
+
+		qCurrent = qNext
+		qNext = queue.New()
+		numSteps++
+
+	}
+
+	return complete
+}
+
 // WriteEdgeList writes the edge list to a file with the required delimiter
 func (g *Graph) WriteEdgeList(filepath string, delimiter string) {
 
