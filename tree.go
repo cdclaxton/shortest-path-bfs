@@ -6,10 +6,10 @@ import (
 
 // TreeNode represents a node in a tree data structure
 type TreeNode struct {
-	name     string
-	parent   *TreeNode
-	children []*TreeNode
-	marked   bool
+	name     string      // name of the node from the graph
+	parent   *TreeNode   // parent of the node
+	children []*TreeNode // children of the node
+	marked   bool        // boolean flag
 }
 
 // makeTreeNode makes a new TreeNode struct

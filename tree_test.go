@@ -136,3 +136,48 @@ func TestFlatten2(t *testing.T) {
 		t.Errorf("Expected %v, got %v", expectedB, actualB)
 	}
 }
+
+func TestComplexCase(t *testing.T) {
+
+	// Tier 0
+	a := makeTreeNode("a", false)
+
+	// Tier 1
+	b := a.makeChild("b", false)
+
+	// Tier 2
+	c := b.makeChild("c", false)
+	d := b.makeChild("d", false)
+
+	// Tier 3
+	c.makeChild("e", false)
+	f := c.makeChild("f", false)
+	d.makeChild("g", false)
+	h := d.makeChild("h", false)
+	j1 := d.makeChild("j", true)
+
+	// Tier 4
+	j2 := f.makeChild("j", true)
+	j3 := h.makeChild("j", true)
+
+	actualPathJ1 := j1.flatten()
+	expectedPathJ1 := []string{"a", "b", "d", "j"}
+
+	if !reflect.DeepEqual(expectedPathJ1, actualPathJ1) {
+		t.Errorf("Expected %v, got %v", expectedPathJ1, actualPathJ1)
+	}
+
+	actualPathJ2 := j2.flatten()
+	expectedPathJ2 := []string{"a", "b", "c", "f", "j"}
+
+	if !reflect.DeepEqual(expectedPathJ2, actualPathJ2) {
+		t.Errorf("Expected %v, got %v", expectedPathJ2, actualPathJ2)
+	}
+
+	actualPathJ3 := j3.flatten()
+	expectedPathJ3 := []string{"a", "b", "d", "h", "j"}
+
+	if !reflect.DeepEqual(expectedPathJ3, actualPathJ3) {
+		t.Errorf("Expected %v, got %v", expectedPathJ3, actualPathJ3)
+	}
+}
