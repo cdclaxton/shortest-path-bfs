@@ -21,6 +21,7 @@ type EntityConfig struct {
 // OutputConfig represents the config for the output from the BFS
 type OutputConfig struct {
 	MaxDepth        int    `json:"max_depth"`
+	FindAllPaths    bool   `json:"find_all_paths"`
 	OutputFile      string `json:"output_file"`
 	OutputDelimiter string `json:"delimiter"`
 	PathDelimiter   string `json:"path_delimiter"`
@@ -42,6 +43,7 @@ func (c *PathConfig) display() {
 	fmt.Println("    Number of paths 'from':     ", len(c.Entities.From))
 	fmt.Println("    Number of entities to skip: ", len(c.Entities.Skip))
 	fmt.Println("    Maximum depth:              ", c.Output.MaxDepth)
+	fmt.Println("    Find all paths:             ", c.Output.FindAllPaths)
 	fmt.Println("    Output file:                ", c.Output.OutputFile)
 	fmt.Println("    Delimiter:                  ", c.Output.OutputDelimiter)
 	fmt.Println("    Path delimiter:             ", c.Output.PathDelimiter)
@@ -149,6 +151,46 @@ func extractEntityPair(pair string, delimiter string) (string, string, error) {
 	return parts[0], parts[1], nil
 }
 
+func findAndRecordShortestPaths(g *Graph,
+	source string, destination string,
+	outputConfig OutputConfig, outputFile *os.File) {
+
+	if outputConfig.FindAllPaths {
+
+		// Find all the paths between the source and destination up to a maximum length
+		paths := g.AllPaths(source, destination, outputConfig.MaxDepth)
+
+		if len(paths) == 0 {
+			fmt.Printf("[!] Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
+		} else {
+			for _, path := range paths {
+				result := NewPathResult(source, destination, path.flatten(), outputConfig.WebAppLink)
+				fmt.Printf("[>] %v\n", result.display())
+				fmt.Fprintln(outputFile, result.toString(outputConfig.OutputDelimiter, outputConfig.PathDelimiter))
+			}
+		}
+
+	} else {
+		// Compute the shortest path using BFS
+		found, vertex := g.Bfs(source, destination, outputConfig.MaxDepth)
+
+		if !found {
+			fmt.Printf("[!] Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
+		} else {
+
+			// Build the PathResult
+			result := NewPathResult(source, destination, vertex.flatten(), outputConfig.WebAppLink)
+
+			// Display the result
+			fmt.Printf("[>] %v\n", result.display())
+
+			// Add the result to the file
+			fmt.Fprintln(outputFile, result.toString(outputConfig.OutputDelimiter, outputConfig.PathDelimiter))
+		}
+	}
+
+}
+
 // performBfs performs breadth first search given a graph and config
 func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) {
 
@@ -204,24 +246,8 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 			// Is the destination reachable from the source?
 			if reachable.Has(destination) {
-
-				// Compute the shortest path using BFS
-				found, vertex := g.Bfs(source, destination, outputConfig.MaxDepth)
-
-				if !found {
-					fmt.Printf("[!] Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
-				} else {
-
-					// Build the PathResult
-					result := NewPathResult(source, destination, vertex.flatten(), outputConfig.WebAppLink)
-
-					// Display the result
-					fmt.Printf("[>] %v\n", result.display())
-
-					// Add the result to the file
-					fmt.Fprintln(outputFile, result.toString(outputConfig.OutputDelimiter, outputConfig.PathDelimiter))
-				}
-
+				findAndRecordShortestPaths(g, source, destination,
+					outputConfig, outputFile)
 			}
 
 			numPairsProcessed++

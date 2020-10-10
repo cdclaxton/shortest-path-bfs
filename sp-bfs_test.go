@@ -236,3 +236,24 @@ func TestPerformBfsFromConfigWithSkips(t *testing.T) {
 		t.Fatalf("Actual results differ from expected results\n")
 	}
 }
+
+func TestPerformFindAllShortestPathsFromConfig(t *testing.T) {
+
+	// Perform BFS using bipartite data
+	PerformBfsFromConfig("./test-data-full-3/config.json")
+
+	// Check the result
+	actual, err := ioutil.ReadFile("./test-data-full-3/results.csv")
+	if err != nil {
+		t.Fatalf("Unable to find test results\n")
+	}
+
+	expected, err := ioutil.ReadFile("./test-data-full-3/expected_results.csv")
+	if err != nil {
+		t.Fatalf("Unable to find expected results\n")
+	}
+
+	if !bytes.Equal(expected, actual) {
+		t.Fatalf("Actual results differ from expected results\n")
+	}
+}
