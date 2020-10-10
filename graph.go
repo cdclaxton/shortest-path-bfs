@@ -236,6 +236,18 @@ func (g *Graph) Bfs(root string, goal string, maxDepth int) (bool, *Vertex) {
 	return false, nil
 }
 
+// flattenAll flattens all of the tree nodes
+func flattenAll(paths []*TreeNode) [][]string {
+
+	flattened := [][]string{}
+
+	for _, node := range paths {
+		flattened = append(flattened, node.flatten())
+	}
+
+	return flattened
+}
+
 // AllPaths finds all the paths from root to goal up to a maximum depth
 func (g *Graph) AllPaths(root string, goal string, maxDepth int) []*TreeNode {
 
@@ -263,7 +275,7 @@ func (g *Graph) AllPaths(root string, goal string, maxDepth int) []*TreeNode {
 		for qCurrent.Len() > 0 {
 
 			// Take a tree node from the queue representing a vertex
-			node := qCurrent.Dequeue().(TreeNode)
+			node := qCurrent.Dequeue().(*TreeNode)
 
 			if node.marked {
 				log.Fatal("Trying to traverse from a marked node")

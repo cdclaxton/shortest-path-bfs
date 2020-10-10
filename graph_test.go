@@ -470,3 +470,144 @@ func TestWriteUndirectedEdgeList(t *testing.T) {
 		t.Fatalf("Actual results differ from expected results\n")
 	}
 }
+
+func TestAllPaths2Vertices(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+
+	paths := g.AllPaths("a", "b", 1)
+	actualPaths := flattenAll(paths)
+
+	expectedPaths := [][]string{
+		{"a", "b"},
+	}
+
+	if !reflect.DeepEqual(expectedPaths, actualPaths) {
+		t.Errorf("Expected %v, got %v", expectedPaths, actualPaths)
+	}
+}
+
+func TestAllPaths3Vertices(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+	g.AddUndirected("b", "c")
+
+	// Stop too early
+	pathsStopped := g.AllPaths("a", "c", 1)
+	if len(pathsStopped) > 0 {
+		t.Errorf("Didn't expect a path, found %v paths", len(pathsStopped))
+	}
+
+	// Stop after 2 steps
+	paths := g.AllPaths("a", "c", 2)
+	actualPaths := flattenAll(paths)
+
+	expectedPaths := [][]string{
+		{"a", "b", "c"},
+	}
+
+	if !reflect.DeepEqual(expectedPaths, actualPaths) {
+		t.Errorf("Expected %v, got %v", expectedPaths, actualPaths)
+	}
+}
+
+func TestAllPaths4Vertices(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+	g.AddUndirected("b", "d")
+	g.AddUndirected("a", "c")
+	g.AddUndirected("c", "d")
+
+	// Stop too early
+	pathsStopped := g.AllPaths("a", "d", 1)
+	if len(pathsStopped) > 0 {
+		t.Errorf("Didn't expect a path, found %v paths", len(pathsStopped))
+	}
+
+	// Stop after 2 steps
+	paths := g.AllPaths("a", "d", 2)
+	actualPaths := flattenAll(paths)
+
+	expectedPaths := [][]string{
+		{"a", "b", "d"},
+		{"a", "c", "d"},
+	}
+
+	if !reflect.DeepEqual(expectedPaths, actualPaths) {
+		t.Errorf("Expected %v, got %v", expectedPaths, actualPaths)
+	}
+}
+
+func TestAllPaths6Vertices(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+	g.AddUndirected("b", "c")
+	g.AddUndirected("b", "d")
+	g.AddUndirected("c", "e")
+	g.AddUndirected("d", "e")
+	g.AddUndirected("e", "f")
+
+	paths := g.AllPaths("a", "e", 4)
+	actualPaths := flattenAll(paths)
+
+	expectedPaths := [][]string{
+		{"a", "b", "c", "e"},
+		{"a", "b", "d", "e"},
+	}
+
+	if !reflect.DeepEqual(expectedPaths, actualPaths) {
+		t.Errorf("Expected %v, got %v", expectedPaths, actualPaths)
+	}
+}
+
+func TestAllPaths6Vertices2(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+	g.AddUndirected("b", "c")
+	g.AddUndirected("b", "d")
+	g.AddUndirected("c", "d")
+	g.AddUndirected("c", "e")
+	g.AddUndirected("d", "e")
+	g.AddUndirected("e", "f")
+	g.AddUndirected("d", "f")
+
+	paths := g.AllPaths("a", "f", 4)
+	actualPaths := flattenAll(paths)
+
+	expectedPaths := [][]string{
+		{"a", "b", "d", "f"},
+		{"a", "b", "c", "d", "f"},
+		{"a", "b", "c", "e", "f"},
+		{"a", "b", "d", "e", "f"},
+	}
+
+	if !reflect.DeepEqual(expectedPaths, actualPaths) {
+		t.Errorf("Expected %v, got %v", expectedPaths, actualPaths)
+	}
+}
+
+func TestAllPaths8Vertices(t *testing.T) {
+	g := NewGraph()
+	g.AddUndirected("a", "b")
+	g.AddUndirected("b", "c")
+	g.AddUndirected("c", "e")
+	g.AddUndirected("c", "f")
+	g.AddUndirected("e", "h")
+	g.AddUndirected("f", "h")
+	g.AddUndirected("b", "d")
+	g.AddUndirected("d", "g")
+	g.AddUndirected("g", "h")
+
+	paths := g.AllPaths("a", "h", 4)
+	actualPaths := flattenAll(paths)
+
+	expectedPaths := [][]string{
+		{"a", "b", "c", "e", "h"},
+		{"a", "b", "c", "f", "h"},
+		{"a", "b", "d", "g", "h"},
+	}
+
+	if !reflect.DeepEqual(expectedPaths, actualPaths) {
+		t.Errorf("Expected %v, got %v", expectedPaths, actualPaths)
+	}
+}
