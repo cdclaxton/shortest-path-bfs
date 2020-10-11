@@ -77,6 +77,6 @@ The `output` section has the following fields:
 
 - Define the `config.json` file.
 
-- Run the EXE. Note that it simply looks for a `config.json` in the same folder as the EXE.
+- Run the EXE using `./shortestpathbfs.exe`. Note that it simply looks for a `config.json` in the same folder as the EXE.
 
 - A CSV format results file will be produced where paths could be found within the maximum search distance.
