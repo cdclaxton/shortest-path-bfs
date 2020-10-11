@@ -10,6 +10,7 @@
   },
   "output": {
     "max_depth": 4,
+    "find_all_paths": true,
     "output_file": "./test-data/results-1.csv",
     "delimiter": ",",
     "path_delimiter": "|",
