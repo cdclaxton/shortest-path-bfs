@@ -59,15 +59,15 @@ In the example from the table above, the code will try to find the shortest path
 
 The `output` section has the following fields:
 
-| Field name     | Purpose                                                                                                         | Example                                      |
-| -------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| max_depth      | Maximum number of hops from the source vertex to a goal                                                         | 3                                            |
-| find_all_paths | Should all shortest paths be found or just the first?                                                           | true                                         |
-| output_file    | Location of the output CSV file of results                                                                      | results.csv                                  |
-| delimiter      | Delimiter to use in the CSV file of results                                                                     | ,                                            |
-| path_delimiter | Path separator in the CSV file                                                                                  | -                                            |
-| webapp_link    | Template for the web-app link (if applicable)                                                                   | http://192.168.99.100:8080/show/<ENTITY_IDS> |
-| unipartite     | File path for the unipartite version of the graph (if required). Set to an empty string if this isn't required. | unipartite.csv                               |
+| Field name     | Purpose                                                                                                                              | Example                                      |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| max_depth      | Maximum number of hops from the source vertex to a goal                                                                              | 3                                            |
+| find_all_paths | Should all shortest paths be found or just the first?                                                                                | true                                         |
+| output_file    | Location of the output CSV file of results                                                                                           | results.csv                                  |
+| delimiter      | Delimiter to use in the CSV file of results                                                                                          | ,                                            |
+| path_delimiter | Path separator in the CSV file                                                                                                       | -                                            |
+| webapp_link    | Template for the web-app link (if applicable). That that a comma-separared list of entities are replaced where <ENTITY_IDS> appears. | http://192.168.99.100:8080/show/<ENTITY_IDS> |
+| unipartite     | File path for the unipartite version of the graph (if required). Set to an empty string if this isn't required.                      | unipartite.csv                               |
 
 ## Usage
 
