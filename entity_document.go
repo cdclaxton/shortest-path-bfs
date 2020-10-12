@@ -16,7 +16,7 @@ type EntityDocument struct {
 	DocumentID string
 }
 
-// ReadEntityDocumentGraphFromFile reads entity-document relationships from a file
+// ReadEntityDocumentGraphFromFile reads entity-document relationships from a file, skipping the required entities
 func ReadEntityDocumentGraphFromFile(filepath string, skipEntities *set.Set) []EntityDocument {
 
 	fmt.Printf("[>] Reading entity-document data from: %v\n", filepath)
@@ -24,7 +24,7 @@ func ReadEntityDocumentGraphFromFile(filepath string, skipEntities *set.Set) []E
 	// Open the file for reading
 	file, err := os.Open(filepath)
 	if err != nil {
-		log.Fatal("Couldn't open CSV file ", err)
+		log.Fatal("[!] Couldn't open CSV file ", err)
 	}
 
 	// Ensure the file is closed
@@ -48,7 +48,7 @@ func ReadEntityDocumentGraphFromFile(filepath string, skipEntities *set.Set) []E
 		}
 
 		if err != nil {
-			log.Fatal("Error reading CSV file: ", err)
+			log.Fatal("[!] Error reading CSV file: ", err)
 		}
 
 		// Ignore the header
@@ -57,7 +57,7 @@ func ReadEntityDocumentGraphFromFile(filepath string, skipEntities *set.Set) []E
 		}
 
 		if len(row) != 2 {
-			log.Fatal("Invalid row: ", row)
+			log.Fatal("[!] Invalid row: ", row)
 		}
 
 		docEnt := EntityDocument{
@@ -76,7 +76,7 @@ func ReadEntityDocumentGraphFromFile(filepath string, skipEntities *set.Set) []E
 	return connections
 }
 
-// ReadEntityDocumentGraph reads the entity-document graph from file
+// ReadEntityDocumentGraph reads the entity-document graph from a list of files
 func ReadEntityDocumentGraph(files []string, skipEntities *set.Set) *[]EntityDocument {
 
 	var allConnections []EntityDocument
@@ -90,7 +90,7 @@ func ReadEntityDocumentGraph(files []string, skipEntities *set.Set) *[]EntityDoc
 	return &allConnections
 }
 
-// BipartiteToUnipartite converts a bipartite graph to a unipartite graph
+// BipartiteToUnipartite converts a bipartite graph to a unipartite graph by collapsing document links
 func BipartiteToUnipartite(connections *[]EntityDocument) *Graph {
 
 	// Map of document IDs to a set of entity IDs
@@ -110,14 +110,36 @@ func BipartiteToUnipartite(connections *[]EntityDocument) *Graph {
 	// Build the graph of just entities
 	g := NewGraph()
 
+	// Number of documents connecting the set number of entities
+	numOneEntity := 0
+	numTwoEntities := 0
+	numThreeEntities := 0
+	numFourOrMoreEntities := 0
+
 	for _, entIDs := range docToEntities {
-		if entIDs.Len() == 2 {
+		if entIDs.Len() == 1 {
+			numOneEntity++
+		} else if entIDs.Len() == 2 {
 			elements := ConvertSetToSlice(entIDs)
 			g.AddUndirected(elements[0], elements[1])
-		} else if entIDs.Len() > 2 {
-			fmt.Printf("[!] Expected at most 2 links between document, found %v\n", entIDs.Len())
+			numTwoEntities++
+		} else if entIDs.Len() == 3 {
+			// This case isn't expected, but is handled
+			elements := ConvertSetToSlice(entIDs)
+			g.AddUndirected(elements[0], elements[1])
+			g.AddUndirected(elements[0], elements[2])
+			g.AddUndirected(elements[1], elements[2])
+			numThreeEntities++
+		} else {
+			numFourOrMoreEntities++
 		}
 	}
+
+	fmt.Printf("[>] Summary:\n")
+	fmt.Printf("    Number of documents with 1 entity:   %v\n", numOneEntity)
+	fmt.Printf("    Number of documents with 2 entities: %v\n", numTwoEntities)
+	fmt.Printf("    Number of documents with 3 entities: %v\n", numThreeEntities)
+	fmt.Printf("    Number of documents with 4+ entity:  %v\n", numFourOrMoreEntities)
 
 	return &g
 }
