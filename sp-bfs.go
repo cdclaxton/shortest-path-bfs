@@ -151,6 +151,7 @@ func extractEntityPair(pair string, delimiter string) (string, string, error) {
 	return parts[0], parts[1], nil
 }
 
+// findAndRecordShortestPaths finds the shortest path and writes to file
 func findAndRecordShortestPaths(g *Graph,
 	source string, destination string,
 	outputConfig OutputConfig, outputFile *os.File) {
@@ -244,7 +245,7 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 				fmt.Printf("[>] Processed %v pairs of %v\n", numPairsProcessed, totalPairs)
 			}
 
-			// If the destination is reachable from the source, then find the shortest path
+			// If the destination is reachable from the source, then find and record the shortest path
 			if reachable.Has(destination) {
 				findAndRecordShortestPaths(g, source, destination,
 					outputConfig, outputFile)
@@ -287,10 +288,10 @@ func PerformBfsFromConfig(configFilepath string) {
 
 	// Perform BFS
 	n := len(config.Entities.To) * len(config.Entities.From)
-	fmt.Printf("[>] Performing BFS on %v vertex pairs\n", n)
+	fmt.Printf("[>] Performing shortest path analysis on %v vertex pairs\n", n)
 	t3 := time.Now()
 	performBfs(graph, config.Entities, config.Output)
-	fmt.Printf("[>] BFS completed in %v\n", time.Now().Sub(t3))
+	fmt.Printf("[>] Shortest path analysis completed in %v\n", time.Now().Sub(t3))
 
 	// Complete
 	fmt.Printf("[>] Results located at: %v\n", config.Output.OutputFile)
