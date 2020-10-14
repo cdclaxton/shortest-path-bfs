@@ -332,8 +332,8 @@ func PerformBfsFromConfig(configFilepath string) {
 	}
 
 	// Perform shortest path analysis
-	n := totalNumberOfPairs(&config.Entities.DataSources)
-	fmt.Printf("[>] Performing shortest path analysis on %v vertex pairs\n", n)
+	fmt.Printf("[>] Performing shortest path analysis on %v vertex pairs\n",
+		totalNumberOfPairs(&config.Entities.DataSources))
 	t3 := time.Now()
 	performBfs(graph, config.Entities, config.Output)
 	fmt.Printf("[>] Shortest path analysis completed in %v\n", time.Now().Sub(t3))
