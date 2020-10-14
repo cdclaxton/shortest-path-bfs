@@ -12,8 +12,16 @@ func TestReadConfig(t *testing.T) {
 	expected := PathConfig{
 		InputFiles: []string{"./test-data/entity_1.csv", "./test-data/entity_2.csv", "./test-data/entity_3.csv"},
 		Entities: EntityConfig{
-			To:   []string{"e-1", "e-2"},
-			From: []string{"e-5", "e-6"},
+			DataSources: []DataSource{
+				{
+					Name:      "set-1",
+					EntityIds: []string{"e-1", "e-2"},
+				},
+				{
+					Name:      "set-2",
+					EntityIds: []string{"e-5", "e-6"},
+				},
+			},
 			Skip: []string{},
 		},
 		Output: OutputConfig{
@@ -149,20 +157,30 @@ func TestPerformBfs(t *testing.T) {
 
 	// Define entity pairs config
 	entityConfig := EntityConfig{
-		To: []string{"e-1",
-			"e-2",
-			"e-3",
-			"e-6",
-			"e-8"},
-		From: []string{"e-11",
-			"e-12",
-			"e-13",
-			"e-15",
-			"e-16",
-			"e-17",
-			"e-18",
-			"e-19",
-			"e-100"},
+		DataSources: []DataSource{
+			{
+				Name: "set-1",
+				EntityIds: []string{
+					"e-1",
+					"e-2",
+					"e-3",
+					"e-6",
+					"e-8"},
+			},
+			{
+				Name: "set-2",
+				EntityIds: []string{
+					"e-11",
+					"e-12",
+					"e-13",
+					"e-15",
+					"e-16",
+					"e-17",
+					"e-18",
+					"e-19",
+					"e-100"},
+			},
+		},
 		Skip: []string{},
 	}
 
@@ -216,6 +234,27 @@ func TestPerformBfsFromConfig(t *testing.T) {
 	}
 }
 
+func TestPerformBfsFromConfigThreeDataSources(t *testing.T) {
+
+	// Perform BFS using bipartite data
+	PerformBfsFromConfig("./test-data-full/config-2.json")
+
+	// Check the result
+	actual, err := ioutil.ReadFile("./test-data-full/results-2.csv")
+	if err != nil {
+		t.Fatalf("Unable to find test results\n")
+	}
+
+	expected, err := ioutil.ReadFile("./test-data-full/expected_results-2.csv")
+	if err != nil {
+		t.Fatalf("Unable to find expected results\n")
+	}
+
+	if !bytes.Equal(expected, actual) {
+		t.Fatalf("Actual results differ from expected results\n")
+	}
+}
+
 func TestPerformBfsFromConfigWithSkips(t *testing.T) {
 
 	// Perform BFS using bipartite data
@@ -255,5 +294,67 @@ func TestPerformFindAllShortestPathsFromConfig(t *testing.T) {
 
 	if !bytes.Equal(expected, actual) {
 		t.Fatalf("Actual results differ from expected results\n")
+	}
+}
+
+func TestTotalNumberOfPairsOneDataset(t *testing.T) {
+	set := []DataSource{
+		{
+			Name:      "set-1",
+			EntityIds: []string{"e-1"},
+		},
+	}
+
+	actual := totalNumberOfPairs(&set)
+
+	if actual != 0 {
+		t.Errorf("Expected 0 pairs, got %v\n", actual)
+	}
+}
+
+func TestTotalNumberOfPairsTwoDatasets(t *testing.T) {
+	set := []DataSource{
+		{
+			Name:      "set-1",
+			EntityIds: []string{"e-1", "e-2", "e-3"},
+		},
+		{
+			Name:      "set-2",
+			EntityIds: []string{"e-1", "e-3"},
+		},
+	}
+
+	actual := totalNumberOfPairs(&set)
+
+	if actual != 6 {
+		t.Errorf("Expected 6 pairs, got %v\n", actual)
+	}
+}
+
+func TestTotalNumberOfPairsThreeDatasets(t *testing.T) {
+	set := []DataSource{
+		{
+			Name:      "set-1",
+			EntityIds: []string{"e-1", "e-2", "e-3"},
+		},
+		{
+			Name:      "set-2",
+			EntityIds: []string{"e-1", "e-3"},
+		},
+		{
+			Name:      "set-3",
+			EntityIds: []string{"e-1"},
+		},
+	}
+
+	actual := totalNumberOfPairs(&set)
+
+	// set-1 and set-2 = 6
+	// set-1 and set-3 = 3
+	// set-2 and set-3 = 2
+	// therefore expected total = 11
+
+	if actual != 11 {
+		t.Errorf("Expected 11 pairs, got %v\n", actual)
 	}
 }

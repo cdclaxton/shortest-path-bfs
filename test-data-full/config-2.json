@@ -1,0 +1,32 @@
+{
+    "input_files": [
+      "./test-data-full/entity_doc_1.csv",
+      "./test-data-full/entity_doc_2.csv",
+      "./test-data-full/entity_doc_3.csv"
+    ],
+    "entities": {
+      "data_sources": [
+        {
+          "name": "set-1",
+          "entity_ids": ["e-1", "e-2", "e-3"]
+        },
+        {
+          "name": "set-2",
+          "entity_ids": ["e-11", "e-12"]
+        },
+        {
+            "name": "set-3",
+            "entity_ids": ["e-4", "e-10"]
+        }        
+      ],
+      "skip": []
+    },
+    "output": {
+      "max_depth": 3,
+      "output_file": "./test-data-full/results-2.csv",
+      "delimiter": ",",
+      "path_delimiter": "|",
+      "webapp_link": "http://192.168.99.100:8080/show/<ENTITY_IDS>"
+    }
+  }
+  
