@@ -49,11 +49,17 @@ The `input_files` parameter contains a list of entity-document CSV files. Each f
 
 The `entities` section contains:
 
-| Field name | Purpose                                                  | Example                       |
-| ---------- | -------------------------------------------------------- | ----------------------------- |
-| to         | List of entity IDs to traverse to.                       | ["e-1", "e-3", "e-5", "e-11"] |
-| from       | List of entity IDs to traverse from.                     | ["e-6", "e-11"]               |
-| skip       | List of entities to remove from the graph (can be blank) | ["e-100"]                     |
+| Field name   | Purpose                                                  | Example          |
+| ------------ | -------------------------------------------------------- | ---------------- |
+| data_sources | List of data sources                                     | See table below. |
+| skip         | List of entities to remove from the graph (can be blank) | ["e-100"]        |
+
+The `data_sources` list contains objects with the following fields:
+
+| Field name | Purpose                                                      | Example                                    |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------ |
+| name       | Friendly name for the data source (or reason for entity IDs) | "Authors published in IEEE working on DFD" |
+| entity_ids | List of entity IDs                                           | ["e-1", "e-5"]                             |
 
 In the example from the table above, the code will try to find the shortest paths between 4 x 2 = 8 pairs of entity IDs.
 
