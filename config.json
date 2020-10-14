@@ -5,8 +5,17 @@
     "./test-data/entity_3.csv"
   ],
   "entities": {
-    "to": ["e-1", "e-3", "e-5", "e-11"],
-    "from": ["e-1", "e-3", "e-5", "e-11"]
+    "data_sources": [
+      {
+        "name": "set-1",
+        "entity_ids": ["e-1", "e-3", "e-5", "e-11"]
+      },
+      {
+        "name": "set-2",
+        "entity_ids": ["e-1", "e-3", "e-5", "e-11"]
+      }   
+    ],
+    "skip": []
   },
   "output": {
     "max_depth": 4,
