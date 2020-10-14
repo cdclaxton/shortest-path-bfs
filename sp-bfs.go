@@ -11,11 +11,16 @@ import (
 	"time"
 )
 
-// EntityConfig represents the entity pairs to find paths for
+// DataSource represents a named data source with entity IDs
+type DataSource struct {
+	Name      string   `json:"name"`
+	EntityIds []string `json:"entity_ids"`
+}
+
+// EntityConfig represents the entity pairs for which to find paths
 type EntityConfig struct {
-	To   []string `json:"to"`
-	From []string `json:"from"`
-	Skip []string `json:"skip"`
+	DataSources []DataSource `json:"data_sources"`
+	Skip        []string     `json:"skip"`
 }
 
 // OutputConfig represents the config for the output from the BFS
@@ -39,8 +44,7 @@ type PathConfig struct {
 // display the path config
 func (c *PathConfig) display() {
 	fmt.Println("    Number of input files:      ", len(c.InputFiles))
-	fmt.Println("    Number of paths 'to':       ", len(c.Entities.To))
-	fmt.Println("    Number of paths 'from':     ", len(c.Entities.From))
+	fmt.Println("    Number of data sources:     ", len(c.Entities.DataSources))
 	fmt.Println("    Number of entities to skip: ", len(c.Entities.Skip))
 	fmt.Println("    Maximum depth:              ", c.Output.MaxDepth)
 	fmt.Println("    Find all paths:             ", c.Output.FindAllPaths)
@@ -192,13 +196,37 @@ func findAndRecordShortestPaths(g *Graph,
 
 }
 
-// performBfs performs breadth first search given a graph and config
+// totalNumberOfPairs returns the total number of pairs of entities
+func totalNumberOfPairs(dataSources *[]DataSource) int {
+
+	if len(*dataSources) < 2 {
+		return 0
+	}
+
+	total := 0
+
+	// Walk through each ordered pair of data sources
+	for i := 0; i < len(*dataSources)-1; i++ {
+		for j := i + 1; j < len(*dataSources); j++ {
+
+			lenA := len((*dataSources)[i].EntityIds)
+			lenB := len((*dataSources)[j].EntityIds)
+
+			total += (lenA * lenB)
+
+		}
+	}
+
+	return total
+}
+
+// performBfs performs breadth first search or exhaustive search given a graph and config
 func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) {
 
 	// Open the output CSV file for writing
 	outputFile, err := os.Create(outputConfig.OutputFile)
 	if err != nil {
-		log.Fatalf("Unable to open output file %v for writing: %v\n", outputConfig.OutputFile, err)
+		log.Fatalf("[!] Unable to open output file %v for writing: %v\n", outputConfig.OutputFile, err)
 	}
 	defer outputFile.Close()
 
@@ -206,57 +234,68 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 	fmt.Fprintln(outputFile, pathResultHeader(outputConfig.OutputDelimiter))
 
 	// Total number of entity pairs to check
-	totalPairs := len(entityConfig.To) * len(entityConfig.From)
+	totalPairs := totalNumberOfPairs(&entityConfig.DataSources)
 	numPairsProcessed := 0
 
 	// Make a set of entities to skip
 	skipEntities := SliceToSet(entityConfig.Skip)
 	numEntitiesSkipped := 0
 
-	for _, source := range entityConfig.To {
+	// Walk through all pairs of data sources
+	for i := 0; i < len(entityConfig.DataSources)-1; i++ {
+		for j := i + 1; j < len(entityConfig.DataSources); j++ {
 
-		// Skip the entity if required
-		if skipEntities.Has(source) {
-			numPairsProcessed += len(entityConfig.From)
-			numEntitiesSkipped++
-			continue
-		}
+			fmt.Printf("[>] Checking connections for data sources %v <--> %v\n",
+				entityConfig.DataSources[i].Name,
+				entityConfig.DataSources[j].Name)
 
-		// Set of all vertices within reach of the source vertex
-		found, reachable := g.ReachableVertices(source, outputConfig.MaxDepth)
+			for _, source := range entityConfig.DataSources[i].EntityIds {
 
-		// If the source vertex was not found, just continue to the next vertex
-		if !found {
-			numPairsProcessed += len(entityConfig.From)
-			continue
-		}
+				// Skip the entity if required
+				if skipEntities.Has(source) {
+					numPairsProcessed += len(entityConfig.DataSources[i].EntityIds)
+					numEntitiesSkipped++
+					continue
+				}
 
-		for _, destination := range entityConfig.From {
+				// Set of all vertices within reach of the source vertex
+				found, reachable := g.ReachableVertices(source, outputConfig.MaxDepth)
 
-			// Skip the entity if required
-			if skipEntities.Has(destination) {
-				numPairsProcessed++
-				numEntitiesSkipped++
-				continue
+				// If the source vertex was not found, just continue to the next vertex
+				if !found {
+					numPairsProcessed += len(entityConfig.DataSources[i].EntityIds)
+					continue
+				}
+
+				for _, destination := range entityConfig.DataSources[j].EntityIds {
+
+					// Skip the entity if required
+					if skipEntities.Has(destination) {
+						numPairsProcessed++
+						numEntitiesSkipped++
+						continue
+					}
+
+					// Provide feedback on long-running jobs
+					if numPairsProcessed%10000 == 0 {
+						fmt.Printf("[>] Processed %v pairs of %v\n", numPairsProcessed, totalPairs)
+					}
+
+					// If the destination is reachable from the source, then find and record the shortest path
+					if reachable.Has(destination) {
+						findAndRecordShortestPaths(g, source, destination, outputConfig, outputFile)
+					}
+
+					numPairsProcessed++
+				}
+
 			}
 
-			// Provide feedback on long-running jobs
-			if numPairsProcessed%10000 == 0 {
-				fmt.Printf("[>] Processed %v pairs of %v\n", numPairsProcessed, totalPairs)
-			}
-
-			// If the destination is reachable from the source, then find and record the shortest path
-			if reachable.Has(destination) {
-				findAndRecordShortestPaths(g, source, destination,
-					outputConfig, outputFile)
-			}
-
-			numPairsProcessed++
 		}
 
+		fmt.Printf("[>] Number of entities skipped: %v\n", numEntitiesSkipped)
 	}
 
-	fmt.Printf("[>] Number of entities skipped: %v\n", numEntitiesSkipped)
 }
 
 // PerformBfsFromConfig performs BFS based on a config file
@@ -267,6 +306,12 @@ func PerformBfsFromConfig(configFilepath string) {
 	fmt.Println("[>] Reading configuration ...")
 	config := readConfig(configFilepath)
 	config.display()
+
+	// Check there are at least two data sources to find connections
+	if len(config.Entities.DataSources) < 2 {
+		fmt.Println("[!] At least two data sources must be specified in the config")
+		return
+	}
 
 	// Read the entity-document relationships from file
 	fmt.Println("[>] Reading entity-document graph from file ...")
@@ -286,8 +331,8 @@ func PerformBfsFromConfig(configFilepath string) {
 		graph.WriteUndirectedEdgeList(config.Output.UnipartiteFile, config.Output.PathDelimiter)
 	}
 
-	// Perform BFS
-	n := len(config.Entities.To) * len(config.Entities.From)
+	// Perform shortest path analysis
+	n := totalNumberOfPairs(&config.Entities.DataSources)
 	fmt.Printf("[>] Performing shortest path analysis on %v vertex pairs\n", n)
 	t3 := time.Now()
 	performBfs(graph, config.Entities, config.Output)
