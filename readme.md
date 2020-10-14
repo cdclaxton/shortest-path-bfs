@@ -61,8 +61,6 @@ The `data_sources` list contains objects with the following fields:
 | name       | Friendly name for the data source (or reason for entity IDs) | "Authors published in IEEE working on DFD" |
 | entity_ids | List of entity IDs                                           | ["e-1", "e-5"]                             |
 
-In the example from the table above, the code will try to find the shortest paths between 4 x 2 = 8 pairs of entity IDs.
-
 The `output` section has the following fields:
 
 | Field name     | Purpose                                                                                                                              | Example                                      |
