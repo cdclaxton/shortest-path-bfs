@@ -39,14 +39,16 @@ func TestReadConfig(t *testing.T) {
 }
 
 func TestNewPathResult(t *testing.T) {
-	actual := NewPathResult("e-1", "e-3", []string{"e-1", "e-20", "e-3"}, "http://localhost/show.php?<ENTITY_IDS>&v")
+	actual := NewPathResult("e-1", "set-1", "e-3", "set-2", []string{"e-1", "e-20", "e-3"}, "http://localhost/show.php?<ENTITY_IDS>&v")
 
 	expected := PathResult{
-		SourceEntityID:      "e-1",
-		DestinationEntityID: "e-3",
-		NumberOfHops:        2,
-		Path:                []string{"e-1", "e-20", "e-3"},
-		WebAppLink:          "http://localhost/show.php?e-1,e-20,e-3&v",
+		SourceEntityID:              "e-1",
+		SourceEntityDataSource:      "set-1",
+		DestinationEntityID:         "e-3",
+		DestinationEntityDataSource: "set-2",
+		NumberOfHops:                2,
+		Path:                        []string{"e-1", "e-20", "e-3"},
+		WebAppLink:                  "http://localhost/show.php?e-1,e-20,e-3&v",
 	}
 
 	if !reflect.DeepEqual(expected, actual) {
@@ -55,9 +57,9 @@ func TestNewPathResult(t *testing.T) {
 }
 
 func TestPathResultDisplay(t *testing.T) {
-	pathResult := NewPathResult("e-1", "e-3", []string{"e-1", "e-20", "e-3"}, "http://localhost/show.php?<ENTITY_IDS>&v")
+	pathResult := NewPathResult("e-1", "set-1", "e-3", "set-2", []string{"e-1", "e-20", "e-3"}, "http://localhost/show.php?<ENTITY_IDS>&v")
 	actual := pathResult.display()
-	expected := "e-1 -> e-3 (2 hops): [e-1 e-20 e-3]"
+	expected := "e-1:set-1 -> e-3:set-2 (2 hops) [e-1 e-20 e-3]"
 
 	if expected != actual {
 		t.Fatalf("Expected %v, got %v\n", expected, actual)
@@ -65,9 +67,9 @@ func TestPathResultDisplay(t *testing.T) {
 }
 
 func TestPathResultToString(t *testing.T) {
-	pathResult := NewPathResult("e-1", "e-3", []string{"e-1", "e-20", "e-3"}, "http://localhost/show.php?<ENTITY_IDS>&v")
+	pathResult := NewPathResult("e-1", "set-1", "e-3", "set-2", []string{"e-1", "e-20", "e-3"}, "http://localhost/show.php?<ENTITY_IDS>&v")
 	actual := pathResult.toString(",", "|")
-	expected := "e-1,e-3,2,e-1|e-20|e-3,http://localhost/show.php?e-1,e-20,e-3&v"
+	expected := "e-1,set-1,e-3,set-2,2,e-1|e-20|e-3,http://localhost/show.php?e-1,e-20,e-3&v"
 
 	if expected != actual {
 		t.Fatalf("Expected %v, got %v\n", expected, actual)
@@ -76,7 +78,7 @@ func TestPathResultToString(t *testing.T) {
 
 func TestPathResultHeader(t *testing.T) {
 	actual := pathResultHeader(",")
-	expected := "Source entity ID,Destination entity ID,Number of hops,Path,Link"
+	expected := "Source entity ID,Source entity data source,Destination entity ID,Destination entity data source,Number of hops,Path,Link"
 
 	if expected != actual {
 		t.Fatalf("Expected %v, got %v\n", expected, actual)

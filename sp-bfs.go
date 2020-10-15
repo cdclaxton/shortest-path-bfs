@@ -76,11 +76,13 @@ func readConfig(filePath string) PathConfig {
 
 // PathResult represents a shortest path
 type PathResult struct {
-	SourceEntityID      string
-	DestinationEntityID string
-	NumberOfHops        int
-	Path                []string
-	WebAppLink          string
+	SourceEntityID              string
+	SourceEntityDataSource      string
+	DestinationEntityID         string
+	DestinationEntityDataSource string
+	NumberOfHops                int
+	Path                        []string
+	WebAppLink                  string
 }
 
 // buildWebAppLink builds the web-app link
@@ -94,20 +96,48 @@ func buildWebAppLink(template string, path []string) string {
 }
 
 // NewPathResult returns a PathResult based on a list of vertices
-func NewPathResult(source string, destination string, vertices []string, webAppTemplate string) PathResult {
+func NewPathResult(source string, sourceDataSource string,
+	destination string, destinationDataSource string,
+	vertices []string, webAppTemplate string) PathResult {
+
+	// Check the parameters
+	if len(source) == 0 {
+		log.Fatal("Source entity ID is blank")
+	}
+
+	if len(sourceDataSource) == 0 {
+		log.Fatal("Data source for the source entity is blank")
+	}
+
+	if len(destination) == 0 {
+		log.Fatal("Destination entity ID is blank")
+	}
+
+	if len(destinationDataSource) == 0 {
+		log.Fatal("Data source for the destination entity is blank")
+	}
+
+	if len(vertices) < 2 {
+		log.Fatalf("List of vertices on path is too small (%v)", len(vertices))
+	}
+
 	return PathResult{
-		SourceEntityID:      source,
-		DestinationEntityID: destination,
-		NumberOfHops:        len(vertices) - 1,
-		Path:                vertices,
-		WebAppLink:          buildWebAppLink(webAppTemplate, vertices),
+		SourceEntityID:              source,
+		SourceEntityDataSource:      sourceDataSource,
+		DestinationEntityID:         destination,
+		DestinationEntityDataSource: destinationDataSource,
+		NumberOfHops:                len(vertices) - 1,
+		Path:                        vertices,
+		WebAppLink:                  buildWebAppLink(webAppTemplate, vertices),
 	}
 }
 
-// display produces a string representation for stdout
+// display produces a string representation of the path for stdout
 func (r *PathResult) display() string {
-	return fmt.Sprintf("%v -> %v (%v hops): %v",
-		r.SourceEntityID, r.DestinationEntityID, r.NumberOfHops, r.Path)
+	return fmt.Sprintf("%v:%v -> %v:%v (%v hops) %v",
+		r.SourceEntityID, r.SourceEntityDataSource,
+		r.DestinationEntityID, r.DestinationEntityDataSource,
+		r.NumberOfHops, r.Path)
 }
 
 // toString converts a path result to delimited form for writing to file
@@ -118,7 +148,9 @@ func (r *PathResult) toString(delimiter string, pathDelimiter string) string {
 
 	parts := []string{
 		r.SourceEntityID,
+		r.SourceEntityDataSource,
 		r.DestinationEntityID,
+		r.DestinationEntityDataSource,
 		strconv.Itoa(r.NumberOfHops),
 		path,
 		r.WebAppLink,
@@ -128,11 +160,13 @@ func (r *PathResult) toString(delimiter string, pathDelimiter string) string {
 	return strings.Join(parts, delimiter)
 }
 
-// pathResultHeader returns the delimited file header
+// pathResultHeader returns the header for the delimited file
 func pathResultHeader(delimiter string) string {
 	parts := []string{
 		"Source entity ID",
+		"Source entity data source",
 		"Destination entity ID",
+		"Destination entity data source",
 		"Number of hops",
 		"Path",
 		"Link",
@@ -157,7 +191,8 @@ func extractEntityPair(pair string, delimiter string) (string, string, error) {
 
 // findAndRecordShortestPaths finds the shortest path and writes to file
 func findAndRecordShortestPaths(g *Graph,
-	source string, destination string,
+	source string, sourceDataSource string,
+	destination string, destinationDataSource string,
 	outputConfig OutputConfig, outputFile *os.File) {
 
 	if outputConfig.FindAllPaths {
@@ -169,7 +204,9 @@ func findAndRecordShortestPaths(g *Graph,
 			fmt.Printf("[!] Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
 		} else {
 			for _, path := range paths {
-				result := NewPathResult(source, destination, path.flatten(), outputConfig.WebAppLink)
+				result := NewPathResult(source, sourceDataSource,
+					destination, destinationDataSource,
+					path.flatten(), outputConfig.WebAppLink)
 				fmt.Printf("[>] %v\n", result.display())
 				fmt.Fprintln(outputFile, result.toString(outputConfig.OutputDelimiter, outputConfig.PathDelimiter))
 			}
@@ -184,7 +221,9 @@ func findAndRecordShortestPaths(g *Graph,
 		} else {
 
 			// Build the PathResult
-			result := NewPathResult(source, destination, vertex.flatten(), outputConfig.WebAppLink)
+			result := NewPathResult(source, sourceDataSource,
+				destination, destinationDataSource,
+				vertex.flatten(), outputConfig.WebAppLink)
 
 			// Display the result
 			fmt.Printf("[>] %v\n", result.display())
@@ -283,7 +322,13 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 					// If the destination is reachable from the source, then find and record the shortest path
 					if reachable.Has(destination) {
-						findAndRecordShortestPaths(g, source, destination, outputConfig, outputFile)
+						findAndRecordShortestPaths(g,
+							source,
+							entityConfig.DataSources[i].Name,
+							destination,
+							entityConfig.DataSources[j].Name,
+							outputConfig,
+							outputFile)
 					}
 
 					numPairsProcessed++
