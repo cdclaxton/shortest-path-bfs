@@ -4,7 +4,7 @@
     "./test-data-full-3/entity_doc_2.csv"
   ],
   "entities": {
-    "data_source": [
+    "data_sources": [
       {
         "name": "set-1",
         "entity_ids":  ["e-1"]
