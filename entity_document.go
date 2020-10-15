@@ -12,8 +12,8 @@ import (
 
 // EntityDocument represents an entity-document relationship
 type EntityDocument struct {
-	EntityID   string
-	DocumentID string
+	EntityID   string // entity ID
+	DocumentID string // document ID
 }
 
 // ReadEntityDocumentGraphFromFile reads entity-document relationships from a file, skipping the required entities

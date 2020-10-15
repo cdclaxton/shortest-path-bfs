@@ -13,32 +13,32 @@ import (
 
 // DataSource represents a named data source with entity IDs
 type DataSource struct {
-	Name      string   `json:"name"`
-	EntityIds []string `json:"entity_ids"`
+	Name      string   `json:"name"`       // friendly name of the data source
+	EntityIds []string `json:"entity_ids"` // list of entity IDs
 }
 
 // EntityConfig represents the entity pairs for which to find paths
 type EntityConfig struct {
-	DataSources []DataSource `json:"data_sources"`
-	Skip        []string     `json:"skip"`
+	DataSources []DataSource `json:"data_sources"` // list of data sources with entity IDs of interest
+	Skip        []string     `json:"skip"`         // list of entities to ignore when constructing the graph
 }
 
 // OutputConfig represents the config for the output from the BFS
 type OutputConfig struct {
-	MaxDepth        int    `json:"max_depth"`
-	FindAllPaths    bool   `json:"find_all_paths"`
-	OutputFile      string `json:"output_file"`
-	OutputDelimiter string `json:"delimiter"`
-	PathDelimiter   string `json:"path_delimiter"`
-	WebAppLink      string `json:"webapp_link"`
-	UnipartiteFile  string `json:"unipartite"`
+	MaxDepth        int    `json:"max_depth"`      // maximum number of hops from a source to a destination vertex
+	FindAllPaths    bool   `json:"find_all_paths"` // should all paths be found or just the first?
+	OutputFile      string `json:"output_file"`    // location of the output CSV file
+	OutputDelimiter string `json:"delimiter"`      // delimiter to use in the CSV file
+	PathDelimiter   string `json:"path_delimiter"` // delimiter to use between entity IDs on a path
+	WebAppLink      string `json:"webapp_link"`    // web-app link to generate for the path
+	UnipartiteFile  string `json:"unipartite"`     // location of the unipartite CSV file to write
 }
 
 // PathConfig represents the JSON config
 type PathConfig struct {
-	InputFiles []string     `json:"input_files"`
-	Entities   EntityConfig `json:"entities"`
-	Output     OutputConfig `json:"output"`
+	InputFiles []string     `json:"input_files"` // list of CSV files from which the graph will be constructed
+	Entities   EntityConfig `json:"entities"`    // entity IDs to consider and skip
+	Output     OutputConfig `json:"output"`      // configuration for the output CSV file
 }
 
 // display the path config
@@ -68,7 +68,7 @@ func readConfig(filePath string) PathConfig {
 	config := PathConfig{}
 	err = json.Unmarshal(bytes, &config)
 	if err != nil {
-		log.Fatal("Unable to unmarshall JSON")
+		log.Fatalf("Unable to unmarshall JSON from file: %v", filePath)
 	}
 
 	return config
@@ -76,17 +76,22 @@ func readConfig(filePath string) PathConfig {
 
 // PathResult represents a shortest path
 type PathResult struct {
-	SourceEntityID              string
-	SourceEntityDataSource      string
-	DestinationEntityID         string
-	DestinationEntityDataSource string
-	NumberOfHops                int
-	Path                        []string
-	WebAppLink                  string
+	SourceEntityID              string   // entity ID of the source vertex
+	SourceEntityDataSource      string   // data source from which the source entity ID came
+	DestinationEntityID         string   // entity ID of the destination vertex
+	DestinationEntityDataSource string   // data source from which the destination entity ID came
+	NumberOfHops                int      // number of hops from source to destination
+	Path                        []string // list of entity IDs on the path from source to destination
+	WebAppLink                  string   // web-app link for the path
 }
 
 // buildWebAppLink builds the web-app link
 func buildWebAppLink(template string, path []string) string {
+
+	// Precondition
+	if len(path) == 0 {
+		log.Fatal("Path is empty")
+	}
 
 	// List of comma-separated entity IDs
 	entityIds := strings.Join(path, ",")
@@ -143,6 +148,15 @@ func (r *PathResult) display() string {
 // toString converts a path result to delimited form for writing to file
 func (r *PathResult) toString(delimiter string, pathDelimiter string) string {
 
+	// Preconditions
+	if len(delimiter) == 0 {
+		log.Fatal("Cannot use a blank delimiter")
+	}
+
+	if len(pathDelimiter) == 0 {
+		log.Fatal("Cannot use a blank delimiter for the path")
+	}
+
 	// Build a representation of the path as a simple delimited string
 	path := strings.Join(r.Path, pathDelimiter)
 
@@ -162,6 +176,12 @@ func (r *PathResult) toString(delimiter string, pathDelimiter string) string {
 
 // pathResultHeader returns the header for the delimited file
 func pathResultHeader(delimiter string) string {
+
+	// Precondition
+	if len(delimiter) == 0 {
+		log.Fatal("Cannot use a blank delimiter")
+	}
+
 	parts := []string{
 		"Source entity ID",
 		"Source entity data source",
