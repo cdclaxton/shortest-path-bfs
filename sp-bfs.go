@@ -328,8 +328,8 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 				for _, destination := range entityConfig.DataSources[j].EntityIds {
 
-					// Skip the entity if required
-					if skipEntities.Has(destination) {
+					// Skip the entity if it's both source and destination or if it needs to be skipped
+					if (source == destination) || skipEntities.Has(destination) {
 						numPairsProcessed++
 						numEntitiesSkipped++
 						continue
