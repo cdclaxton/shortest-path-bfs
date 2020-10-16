@@ -72,6 +72,19 @@ func (g *Graph) Equal(g2 *Graph, debug bool) bool {
 // AddDirected adds a directed connection in the graph
 func (g *Graph) AddDirected(source string, destination string) {
 
+	// Preconditions
+	if source == destination {
+		log.Fatalf("Source and destination vertices are identical: %v\n", source)
+	}
+
+	if len(source) == 0 {
+		log.Fatal("Source vertex is empty")
+	}
+
+	if len(destination) == 0 {
+		log.Fatal("Destination vertex is empty")
+	}
+
 	// Has the source been seen before?
 	_, present := g.Nodes[source]
 	if !present {
@@ -90,6 +103,11 @@ func (g *Graph) AddUndirected(source string, destination string) {
 // AdjacentTo returns the vertices adjacent to a given vertex
 func (g *Graph) AdjacentTo(source string) []string {
 
+	// Precondition
+	if len(source) == 0 {
+		log.Fatal("Source vertex is empty")
+	}
+
 	values, ok := g.Nodes[source]
 	if !ok {
 		return nil
@@ -107,6 +125,16 @@ type Vertex struct {
 
 // NewVertex creates a new Vertex
 func NewVertex(identifier string, depth int) Vertex {
+
+	// Preconditions
+	if len(identifier) == 0 {
+		log.Fatal("Identifier is empty")
+	}
+
+	if depth < 0 {
+		log.Fatalf("Invalid depth: %v\n", depth)
+	}
+
 	return Vertex{
 		Identifier: identifier,
 		Depth:      depth,
@@ -131,6 +159,15 @@ func (v *Vertex) flatten() []string {
 
 // ReachableVertices finds all vertices reachable within m steps
 func (g *Graph) ReachableVertices(root string, maxDepth int) (bool, *set.Set) {
+
+	// Preconditions
+	if len(root) == 0 {
+		log.Fatal("Root vertex is empty")
+	}
+
+	if maxDepth < 0 {
+		log.Fatalf("Maximum depth is invalid: %v\n", maxDepth)
+	}
 
 	// Set of the identifiers of discovered vertices
 	discovered := set.New()
@@ -185,6 +222,19 @@ func (g *Graph) ReachableVertices(root string, maxDepth int) (bool, *set.Set) {
 
 // Bfs performs a Breadth First Search in the graph
 func (g *Graph) Bfs(root string, goal string, maxDepth int) (bool, *Vertex) {
+
+	// Preconditions
+	if len(root) == 0 {
+		log.Fatal("Root vertex is empty")
+	}
+
+	if len(goal) == 0 {
+		log.Fatal("Goal vertex is empty")
+	}
+
+	if maxDepth < 0 {
+		log.Fatalf("Maximum depth is invalid: %v\n", maxDepth)
+	}
 
 	// Set of the identifiers of discovered vertices
 	discovered := set.New()
@@ -251,6 +301,19 @@ func flattenAll(paths []*TreeNode) [][]string {
 // AllPaths finds all the paths from root to goal up to a maximum depth
 func (g *Graph) AllPaths(root string, goal string, maxDepth int) []*TreeNode {
 
+	// Preconditions
+	if len(root) == 0 {
+		log.Fatal("Root vertex is empty")
+	}
+
+	if len(goal) == 0 {
+		log.Fatal("Goal vertex is empty")
+	}
+
+	if maxDepth < 0 {
+		log.Fatalf("Maximum depth is invalid: %v\n", maxDepth)
+	}
+
 	// Number of steps traversed from the root vertex
 	numSteps := 0
 
@@ -314,6 +377,11 @@ func (g *Graph) AllPaths(root string, goal string, maxDepth int) []*TreeNode {
 // WriteEdgeList writes the edge list to a file with the required delimiter
 func (g *Graph) WriteEdgeList(filepath string, delimiter string) {
 
+	// Precondition
+	if len(delimiter) == 0 {
+		log.Fatal("Delimiter is empty")
+	}
+
 	// Open the output CSV file for writing
 	outputFile, err := os.Create(filepath)
 	if err != nil {
@@ -365,6 +433,11 @@ func (g *Graph) SimplifyForUndirectedGraph() *Graph {
 
 // WriteUndirectedEdgeList creates an edge list for an undirected graph
 func (g *Graph) WriteUndirectedEdgeList(filepath string, delimiter string) {
+
+	// Precondition
+	if len(delimiter) == 0 {
+		log.Fatal("Delimiter is empty")
+	}
 
 	// Simplify the graph
 	simplified := g.SimplifyForUndirectedGraph()
