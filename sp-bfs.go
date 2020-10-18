@@ -209,16 +209,19 @@ func extractEntityPair(pair string, delimiter string) (string, string, error) {
 	return parts[0], parts[1], nil
 }
 
-// findAndRecordShortestPaths finds the shortest path and writes to file
+// findAndRecordShortestPaths finds the shortest path and writes to file and returns the number of paths found
 func findAndRecordShortestPaths(g *Graph,
 	source string, sourceDataSource string,
 	destination string, destinationDataSource string,
-	outputConfig OutputConfig, outputFile *os.File) {
+	outputConfig OutputConfig, outputFile *os.File) int {
+
+	numPathsFound := 0
 
 	if outputConfig.FindAllPaths {
 
 		// Find all the paths between the source and destination up to a maximum length
 		paths := g.AllPaths(source, destination, outputConfig.MaxDepth)
+		numPathsFound = len(paths)
 
 		if len(paths) == 0 {
 			fmt.Printf("[!] Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
@@ -240,6 +243,9 @@ func findAndRecordShortestPaths(g *Graph,
 			fmt.Printf("[!] Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
 		} else {
 
+			// Found 1 path
+			numPathsFound++
+
 			// Build the PathResult
 			result := NewPathResult(source, sourceDataSource,
 				destination, destinationDataSource,
@@ -253,6 +259,7 @@ func findAndRecordShortestPaths(g *Graph,
 		}
 	}
 
+	return numPathsFound
 }
 
 // totalNumberOfPairs returns the total number of pairs of entities
@@ -300,6 +307,9 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 	skipEntities := SliceToSet(entityConfig.Skip)
 	numEntitiesSkipped := 0
 
+	numPairsWithPaths := 0
+	numPathsFound := 0
+
 	// Walk through all pairs of data sources
 	for i := 0; i < len(entityConfig.DataSources)-1; i++ {
 		for j := i + 1; j < len(entityConfig.DataSources); j++ {
@@ -342,13 +352,16 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 					// If the destination is reachable from the source, then find and record the shortest path
 					if reachable.Has(destination) {
-						findAndRecordShortestPaths(g,
+						numPathsFound += findAndRecordShortestPaths(g,
 							source,
 							entityConfig.DataSources[i].Name,
 							destination,
 							entityConfig.DataSources[j].Name,
 							outputConfig,
 							outputFile)
+
+						numPairsWithPaths++
+
 					}
 
 					numPairsProcessed++
@@ -358,7 +371,12 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 		}
 
-		fmt.Printf("[>] Number of entities skipped: %v\n", numEntitiesSkipped)
+		fmt.Println("[>] Summary:")
+		fmt.Printf("    Number of entity pairs:         %v\n", totalPairs)
+		fmt.Printf("    Number of entities skipped:     %v\n", numEntitiesSkipped)
+		fmt.Printf("    Number of pairs with paths:     %v\n", numPairsWithPaths)
+		fmt.Printf("    Percentage of pairs with paths: %.1f %%\n", 100.0*float32(numPairsWithPaths)/float32(totalPairs))
+		fmt.Printf("    Number of paths found:          %v\n", numPathsFound)
 	}
 
 }
