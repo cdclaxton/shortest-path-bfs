@@ -29,7 +29,7 @@ e-2,d-100
 e-3,d-200
 ```
 
-The program can output the unipartite graph as a CSV file by specifying a file path for `unipartite` in the `config.json` file. As the input graph is not directed, the CSV file contains each pair of connected entity IDs just once.
+The program can output the unipartite graph as a CSV file by specifying a file path for `unipartite` in the `config.json` file. As the input graph is not directed, the CSV file contains each pair of connected entity IDs just once. Not that entities that have no connections to other entities are not exported in the unipartite graph.
 
 The paths to try to find are expressed in the JSON file. An example of the output from the code expressed as a table is:
 
