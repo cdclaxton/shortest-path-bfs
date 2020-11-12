@@ -43,3 +43,30 @@ func FilesHaveSameContentIgnoringOrder(filepath1 string, filepath2 string) bool 
 	// Return if the two slices are the same, ignoring the order
 	return SlicesHaveSameElements(contents1, contents2)
 }
+
+// FilesHaveSameContent returns true if the files have the same content, considering the order of the rows
+func FilesHaveSameContent(filepath1 string, filepath2 string) bool {
+
+	// Read the contents of the file
+	contents1 := ReadFileIntoSlice(filepath1)
+	contents2 := ReadFileIntoSlice(filepath2)
+
+	// Check the files contain the same number of rows
+	if len(*contents1) != len(*contents2) {
+		return false
+	}
+
+	// Walk through each row and check the contents
+	for i := 0; i < len(*contents1); i++ {
+
+		row1 := (*contents1)[i]
+		row2 := (*contents2)[i]
+
+		if row1 != row2 {
+			return false
+		}
+	}
+
+	// All rows must have been the same
+	return true
+}

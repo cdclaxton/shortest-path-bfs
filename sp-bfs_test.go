@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"io/ioutil"
 	"reflect"
 	"testing"
 )
@@ -199,20 +197,9 @@ func TestPerformBfs(t *testing.T) {
 	performBfs(&graph, entityConfig, outputConfig)
 
 	// Check the result
-	actual, err := ioutil.ReadFile("./test-data/results.csv")
-	if err != nil {
-		t.Fatalf("Unable to find test results\n")
+	if !FilesHaveSameContent("./test-data/expected_results.csv", "./test-data/results.csv") {
+		t.Fatal("Actual results differ from expected results")
 	}
-
-	expected, err := ioutil.ReadFile("./test-data/expected_results.csv")
-	if err != nil {
-		t.Fatalf("Unable to find expected results\n")
-	}
-
-	if !bytes.Equal(expected, actual) {
-		t.Fatalf("Actual results differ from expected results\n")
-	}
-
 }
 
 func TestPerformBfsFromConfig(t *testing.T) {
@@ -221,18 +208,8 @@ func TestPerformBfsFromConfig(t *testing.T) {
 	PerformBfsFromConfig("./test-data-full/config.json")
 
 	// Check the result
-	actual, err := ioutil.ReadFile("./test-data-full/results.csv")
-	if err != nil {
-		t.Fatalf("Unable to find test results\n")
-	}
-
-	expected, err := ioutil.ReadFile("./test-data-full/expected_results.csv")
-	if err != nil {
-		t.Fatalf("Unable to find expected results\n")
-	}
-
-	if !bytes.Equal(expected, actual) {
-		t.Fatalf("Actual results differ from expected results\n")
+	if !FilesHaveSameContent("./test-data-full/expected_results.csv", "./test-data-full/results.csv") {
+		t.Fatal("Actual results differ from expected results")
 	}
 }
 
@@ -242,18 +219,8 @@ func TestPerformBfsFromConfigThreeDataSources(t *testing.T) {
 	PerformBfsFromConfig("./test-data-full/config-2.json")
 
 	// Check the result
-	actual, err := ioutil.ReadFile("./test-data-full/results-2.csv")
-	if err != nil {
-		t.Fatalf("Unable to find test results\n")
-	}
-
-	expected, err := ioutil.ReadFile("./test-data-full/expected_results-2.csv")
-	if err != nil {
-		t.Fatalf("Unable to find expected results\n")
-	}
-
-	if !bytes.Equal(expected, actual) {
-		t.Fatalf("Actual results differ from expected results\n")
+	if !FilesHaveSameContent("./test-data-full/expected_results-2.csv", "./test-data-full/results-2.csv") {
+		t.Fatal("Actual results differ from expected results")
 	}
 }
 
@@ -263,18 +230,8 @@ func TestPerformBfsFromConfigWithSkips(t *testing.T) {
 	PerformBfsFromConfig("./test-data-full-2/config.json")
 
 	// Check the result
-	actual, err := ioutil.ReadFile("./test-data-full-2/results.csv")
-	if err != nil {
-		t.Fatalf("Unable to find test results\n")
-	}
-
-	expected, err := ioutil.ReadFile("./test-data-full-2/expected_results.csv")
-	if err != nil {
-		t.Fatalf("Unable to find expected results\n")
-	}
-
-	if !bytes.Equal(expected, actual) {
-		t.Fatalf("Actual results differ from expected results\n")
+	if !FilesHaveSameContent("./test-data-full-2/expected_results.csv", "./test-data-full-2/results.csv") {
+		t.Fatal("Actual results differ from expected results")
 	}
 }
 
@@ -284,18 +241,8 @@ func TestPerformFindAllShortestPathsFromConfig(t *testing.T) {
 	PerformBfsFromConfig("./test-data-full-3/config.json")
 
 	// Check the result
-	actual, err := ioutil.ReadFile("./test-data-full-3/results.csv")
-	if err != nil {
-		t.Fatalf("Unable to find test results\n")
-	}
-
-	expected, err := ioutil.ReadFile("./test-data-full-3/expected_results.csv")
-	if err != nil {
-		t.Fatalf("Unable to find expected results\n")
-	}
-
-	if !bytes.Equal(expected, actual) {
-		t.Fatalf("Actual results differ from expected results\n")
+	if !FilesHaveSameContent("./test-data-full-3/expected_results.csv", "./test-data-full-3/results.csv") {
+		t.Fatal("Actual results differ from expected results")
 	}
 }
 
