@@ -375,7 +375,7 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 		fmt.Printf("    Number of entity pairs:         %v\n", totalPairs)
 		fmt.Printf("    Number of entities skipped:     %v\n", numEntitiesSkipped)
 		fmt.Printf("    Number of pairs with paths:     %v\n", numPairsWithPaths)
-		fmt.Printf("    Percentage of pairs with paths: %.1f %%\n", 100.0*float32(numPairsWithPaths)/float32(totalPairs))
+		fmt.Printf("    Percentage of pairs with paths: %.2f %%\n", 100.0*float32(numPairsWithPaths)/float32(totalPairs))
 		fmt.Printf("    Number of paths found:          %v\n", numPathsFound)
 	}
 
