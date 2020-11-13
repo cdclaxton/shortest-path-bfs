@@ -442,11 +442,11 @@ func TestWriteEdgeList(t *testing.T) {
 	g.AddDirected("d", "e")
 
 	// Write the graph to a text file
-	actualFilepath := "./test-writing/actual-output-1.csv"
+	actualFilepath := "./test/test-writing/actual-output-1.csv"
 	g.WriteEdgeList(actualFilepath, ",")
 
 	// Check the result
-	if !FilesHaveSameContentIgnoringOrder(actualFilepath, "./test-writing/expected-output-1.csv") {
+	if !FilesHaveSameContentIgnoringOrder(actualFilepath, "./test/test-writing/expected-output-1.csv") {
 		t.Fatalf("Actual results differ from expected results\n")
 	}
 }
@@ -462,11 +462,11 @@ func TestWriteUndirectedEdgeList(t *testing.T) {
 	g.AddUndirected("c", "f")
 
 	// Write the graph to a text file
-	actualFilepath := "./test-writing/actual-output-2.csv"
+	actualFilepath := "./test/test-writing/actual-output-2.csv"
 	g.WriteUndirectedEdgeList(actualFilepath, ",")
 
 	// Check the result
-	if !FilesHaveSameContentIgnoringOrder(actualFilepath, "./test-writing/expected-output-2.csv") {
+	if !FilesHaveSameContentIgnoringOrder(actualFilepath, "./test/test-writing/expected-output-2.csv") {
 		t.Fatalf("Actual results differ from expected results\n")
 	}
 }

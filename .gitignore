@@ -12,12 +12,12 @@
 *.out
 
 # Results files
-test-data/results.csv
-test-data/results-1.csv
-test-data-full/results.csv
-test-data-full/results-2.csv
-test-data-full-2/results.csv
-test-data-full-3/results.csv
-test-data/unipartite.csv
-test-writing/actual-output-1.csv
-test-writing/actual-output-2.csv
+test/test-data/results.csv
+test/test-data/results-1.csv
+test/test-data-full/results.csv
+test/test-data-full/results-2.csv
+test/test-data-full-2/results.csv
+test/test-data-full-3/results.csv
+test/test-data/unipartite.csv
+test/test-writing/actual-output-1.csv
+test/test-writing/actual-output-2.csv

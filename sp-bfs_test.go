@@ -6,9 +6,9 @@ import (
 )
 
 func TestReadConfig(t *testing.T) {
-	actual := readConfig("./test-data/test-config.json")
+	actual := readConfig("./test/test-data/test-config.json")
 	expected := PathConfig{
-		InputFiles: []string{"./test-data/entity_1.csv", "./test-data/entity_2.csv", "./test-data/entity_3.csv"},
+		InputFiles: []string{"./test/test-data/entity_1.csv", "./test/test-data/entity_2.csv", "./test/test-data/entity_3.csv"},
 		Entities: EntityConfig{
 			DataSources: []DataSource{
 				{
@@ -24,7 +24,7 @@ func TestReadConfig(t *testing.T) {
 		},
 		Output: OutputConfig{
 			MaxDepth:        3,
-			OutputFile:      "./test-data/results.csv",
+			OutputFile:      "./test/test-data/results.csv",
 			OutputDelimiter: ",",
 			PathDelimiter:   "|",
 			WebAppLink:      "http://192.168.99.100:8080/show/<ENTITY_IDS>",
@@ -187,7 +187,7 @@ func TestPerformBfs(t *testing.T) {
 	// Define output config
 	outputConfig := OutputConfig{
 		MaxDepth:        3,
-		OutputFile:      "./test-data/results.csv",
+		OutputFile:      "./test/test-data/results.csv",
 		OutputDelimiter: ",",
 		PathDelimiter:   "|",
 		WebAppLink:      "http://192.168.99.100:8080/show/<ENTITY_IDS>",
@@ -197,7 +197,7 @@ func TestPerformBfs(t *testing.T) {
 	performBfs(&graph, entityConfig, outputConfig)
 
 	// Check the result
-	if !FilesHaveSameContent("./test-data/expected_results.csv", "./test-data/results.csv") {
+	if !FilesHaveSameContent("./test/test-data/expected_results.csv", "./test/test-data/results.csv") {
 		t.Fatal("Actual results differ from expected results")
 	}
 }
@@ -205,10 +205,10 @@ func TestPerformBfs(t *testing.T) {
 func TestPerformBfsFromConfig(t *testing.T) {
 
 	// Perform BFS using bipartite data
-	PerformBfsFromConfig("./test-data-full/config.json")
+	PerformBfsFromConfig("./test/test-data-full/config.json")
 
 	// Check the result
-	if !FilesHaveSameContent("./test-data-full/expected_results.csv", "./test-data-full/results.csv") {
+	if !FilesHaveSameContent("./test/test-data-full/expected_results.csv", "./test/test-data-full/results.csv") {
 		t.Fatal("Actual results differ from expected results")
 	}
 }
@@ -216,10 +216,10 @@ func TestPerformBfsFromConfig(t *testing.T) {
 func TestPerformBfsFromConfigThreeDataSources(t *testing.T) {
 
 	// Perform BFS using bipartite data
-	PerformBfsFromConfig("./test-data-full/config-2.json")
+	PerformBfsFromConfig("./test/test-data-full/config-2.json")
 
 	// Check the result
-	if !FilesHaveSameContent("./test-data-full/expected_results-2.csv", "./test-data-full/results-2.csv") {
+	if !FilesHaveSameContent("./test/test-data-full/expected_results-2.csv", "./test/test-data-full/results-2.csv") {
 		t.Fatal("Actual results differ from expected results")
 	}
 }
@@ -227,10 +227,10 @@ func TestPerformBfsFromConfigThreeDataSources(t *testing.T) {
 func TestPerformBfsFromConfigWithSkips(t *testing.T) {
 
 	// Perform BFS using bipartite data
-	PerformBfsFromConfig("./test-data-full-2/config.json")
+	PerformBfsFromConfig("./test/test-data-full-2/config.json")
 
 	// Check the result
-	if !FilesHaveSameContent("./test-data-full-2/expected_results.csv", "./test-data-full-2/results.csv") {
+	if !FilesHaveSameContent("./test/test-data-full-2/expected_results.csv", "./test/test-data-full-2/results.csv") {
 		t.Fatal("Actual results differ from expected results")
 	}
 }
@@ -238,10 +238,10 @@ func TestPerformBfsFromConfigWithSkips(t *testing.T) {
 func TestPerformFindAllShortestPathsFromConfig(t *testing.T) {
 
 	// Perform BFS using bipartite data
-	PerformBfsFromConfig("./test-data-full-3/config.json")
+	PerformBfsFromConfig("./test/test-data-full-3/config.json")
 
 	// Check the result
-	if !FilesHaveSameContent("./test-data-full-3/expected_results.csv", "./test-data-full-3/results.csv") {
+	if !FilesHaveSameContent("./test/test-data-full-3/expected_results.csv", "./test/test-data-full-3/results.csv") {
 		t.Fatal("Actual results differ from expected results")
 	}
 }

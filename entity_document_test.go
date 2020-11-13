@@ -8,7 +8,7 @@ import (
 )
 
 func TestReadEntityDocumentGraphFromFile0(t *testing.T) {
-	filepath := "./test-data/entity_0.csv"
+	filepath := "./test/test-data/entity_0.csv"
 	skipEntities := set.New()
 	result := ReadEntityDocumentGraphFromFile(filepath, skipEntities)
 
@@ -25,7 +25,7 @@ func TestReadEntityDocumentGraphFromFile0(t *testing.T) {
 }
 
 func TestReadEntityDocumentGraphFromFile1(t *testing.T) {
-	filepath := "./test-data/entity_1.csv"
+	filepath := "./test/test-data/entity_1.csv"
 	skipEntities := set.New()
 	result := ReadEntityDocumentGraphFromFile(filepath, skipEntities)
 
@@ -50,7 +50,7 @@ func TestReadEntityDocumentGraphFromFile1(t *testing.T) {
 }
 
 func TestTestReadEntityDocumentGraphFromFile1WithSkip(t *testing.T) {
-	filepath := "./test-data/entity_3.csv"
+	filepath := "./test/test-data/entity_3.csv"
 	skipEntities := set.New()
 	skipEntities.Insert("e-300")
 
@@ -69,7 +69,7 @@ func TestTestReadEntityDocumentGraphFromFile1WithSkip(t *testing.T) {
 }
 
 func TestTestReadEntityDocumentGraphFromFile2WithSkip(t *testing.T) {
-	filepath := "./test-data/entity_3.csv"
+	filepath := "./test/test-data/entity_3.csv"
 	skipEntities := set.New()
 	skipEntities.Insert("e-300")
 	skipEntities.Insert("e-301")
@@ -84,8 +84,8 @@ func TestTestReadEntityDocumentGraphFromFile2WithSkip(t *testing.T) {
 
 func TestReadEntityDocumentGraph(t *testing.T) {
 	filepaths := []string{
-		"./test-data/entity_2.csv",
-		"./test-data/entity_3.csv",
+		"./test/test-data/entity_2.csv",
+		"./test/test-data/entity_3.csv",
 	}
 	skipEntities := set.New()
 

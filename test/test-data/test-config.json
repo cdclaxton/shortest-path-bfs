@@ -1,8 +1,8 @@
 {
   "input_files": [
-    "./test-data/entity_1.csv",
-    "./test-data/entity_2.csv",
-    "./test-data/entity_3.csv"
+    "./test/test-data/entity_1.csv",
+    "./test/test-data/entity_2.csv",
+    "./test/test-data/entity_3.csv"
   ],
   "entities": {
     "data_sources": [
@@ -19,7 +19,7 @@
   },
   "output": {
     "max_depth": 3,
-    "output_file": "./test-data/results.csv",
+    "output_file": "./test/test-data/results.csv",
     "delimiter": ",",
     "path_delimiter": "|",
     "webapp_link": "http://192.168.99.100:8080/show/<ENTITY_IDS>"
