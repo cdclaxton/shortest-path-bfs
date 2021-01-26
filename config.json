@@ -1,8 +1,8 @@
 {
   "input_files": [
-    "./test-data/entity_1.csv",
-    "./test-data/entity_2.csv",
-    "./test-data/entity_3.csv"
+    "./demo/entity_doc_1.csv",
+    "./demo/entity_doc_2.csv",
+    "./demo/entity_doc_3.csv"
   ],
   "entities": {
     "data_sources": [
@@ -12,7 +12,7 @@
       },
       {
         "name": "set-2",
-        "entity_ids": ["e-1", "e-3", "e-5", "e-11"]
+        "entity_ids": ["e-1", "e-3", "e-5"]
       }   
     ],
     "skip": []
@@ -20,10 +20,10 @@
   "output": {
     "max_depth": 4,
     "find_all_paths": true,
-    "output_file": "./test-data/results-1.csv",
+    "output_file": "./demo/results-1.csv",
     "delimiter": ",",
     "path_delimiter": "|",
     "webapp_link": "http://192.168.99.100:8080/show/<ENTITY_IDS>",
-    "unipartite": "./test-data/unipartite.csv"
+    "unipartite": "./demo/unipartite.csv"
   }
 }
