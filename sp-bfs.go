@@ -296,7 +296,7 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 	}
 	defer outputFile.Close()
 
-	// Write the header
+	// Write the header to the output CSV file
 	fmt.Fprintln(outputFile, pathResultHeader(outputConfig.OutputDelimiter))
 
 	// Total number of entity pairs to check
@@ -305,7 +305,6 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 	// Make a set of entities to skip
 	skipEntities := SliceToSet(entityConfig.Skip)
-	numEntitiesSkipped := 0
 
 	numPairsWithPaths := 0
 	numPathsFound := 0
@@ -318,30 +317,31 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 				entityConfig.DataSources[i].Name,
 				entityConfig.DataSources[j].Name)
 
+			// Walk through each source entity in the i(th) dataset
 			for _, source := range entityConfig.DataSources[i].EntityIds {
 
-				// Skip the entity if required
+				// Skip the source entity if required
 				if skipEntities.Has(source) {
-					numPairsProcessed += len(entityConfig.DataSources[i].EntityIds)
-					numEntitiesSkipped++
+					// Don't need to check all paths to the j(th) dataset
+					numPairsProcessed += len(entityConfig.DataSources[j].EntityIds)
 					continue
 				}
 
 				// Set of all vertices within reach of the source vertex
 				found, reachable := g.ReachableVertices(source, outputConfig.MaxDepth)
 
-				// If the source vertex was not found, just continue to the next vertex
+				// If the source vertex was not found in the dataset, just continue to the next vertex
 				if !found {
-					numPairsProcessed += len(entityConfig.DataSources[i].EntityIds)
+					numPairsProcessed += len(entityConfig.DataSources[j].EntityIds)
 					continue
 				}
 
+				// Walk through each destination entity in the j(th) dataset
 				for _, destination := range entityConfig.DataSources[j].EntityIds {
 
 					// Skip the entity if it's both source and destination or if it needs to be skipped
 					if (source == destination) || skipEntities.Has(destination) {
 						numPairsProcessed++
-						numEntitiesSkipped++
 						continue
 					}
 
@@ -352,7 +352,8 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 					// If the destination is reachable from the source, then find and record the shortest path
 					if reachable.Has(destination) {
-						numPathsFound += findAndRecordShortestPaths(g,
+						numPathsFound += findAndRecordShortestPaths(
+							g,
 							source,
 							entityConfig.DataSources[i].Name,
 							destination,
@@ -361,7 +362,6 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 							outputFile)
 
 						numPairsWithPaths++
-
 					}
 
 					numPairsProcessed++
@@ -372,11 +372,10 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 		}
 
 		fmt.Println("[>] Summary:")
-		fmt.Printf("    Number of entity pairs:         %v\n", totalPairs)
-		fmt.Printf("    Number of entities skipped:     %v\n", numEntitiesSkipped)
+		fmt.Printf("    Total number of entity pairs:   %v\n", totalPairs)
 		fmt.Printf("    Number of pairs with paths:     %v\n", numPairsWithPaths)
 		fmt.Printf("    Percentage of pairs with paths: %.2f %%\n", 100.0*float32(numPairsWithPaths)/float32(totalPairs))
-		fmt.Printf("    Number of paths found:          %v\n", numPathsFound)
+		fmt.Printf("    Total number of paths found:    %v\n", numPathsFound)
 	}
 
 }
