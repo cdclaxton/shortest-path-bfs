@@ -44,9 +44,9 @@ func (g *Graph) Equal(g2 *Graph, debug bool) bool {
 
 	if !SlicesHaveSameElements(&keys1, &keys2) {
 		if debug {
-			fmt.Println("[!] Lists of keys are different")
-			fmt.Printf("[!] Keys1: %v\n", keys1)
-			fmt.Printf("[!] Keys2: %v\n", keys2)
+			log.Println("Lists of keys are different")
+			log.Printf("Keys1: %v\n", keys1)
+			log.Printf("Keys2: %v\n", keys2)
 		}
 		return false
 	}
@@ -58,9 +58,9 @@ func (g *Graph) Equal(g2 *Graph, debug bool) bool {
 
 		if !SetsEqual(conns1, conns2) {
 			if debug {
-				fmt.Printf("[!] Connections different for vertex %v", vertex)
-				fmt.Printf("[!] Connections 1: %v\n", conns1)
-				fmt.Printf("[!] Connections 2: %v\n", conns2)
+				log.Printf("Connections different for vertex %v", vertex)
+				log.Printf("Connections 1: %v\n", conns1)
+				log.Printf("Connections 2: %v\n", conns2)
 			}
 			return false
 		}
