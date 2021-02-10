@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -19,7 +18,7 @@ type EntityDocument struct {
 // ReadEntityDocumentGraphFromFile reads entity-document relationships from a file, skipping the required entities
 func ReadEntityDocumentGraphFromFile(filepath string, skipEntities *set.Set) []EntityDocument {
 
-	fmt.Printf("[>] Reading entity-document data from: %v\n", filepath)
+	log.Printf("Reading entity-document data from: %v\n", filepath)
 
 	// Open the file for reading
 	file, err := os.Open(filepath)
@@ -71,7 +70,7 @@ func ReadEntityDocumentGraphFromFile(filepath string, skipEntities *set.Set) []E
 
 	}
 
-	fmt.Printf("[>] Read %v rows from file %v\n", numRowsRead, filepath)
+	log.Printf("Read %v rows from file %v\n", numRowsRead, filepath)
 
 	return connections
 }
@@ -135,11 +134,10 @@ func BipartiteToUnipartite(connections *[]EntityDocument) *Graph {
 		}
 	}
 
-	fmt.Printf("[>] Summary:\n")
-	fmt.Printf("    Number of documents with 1 entity:   %v\n", numOneEntity)
-	fmt.Printf("    Number of documents with 2 entities: %v\n", numTwoEntities)
-	fmt.Printf("    Number of documents with 3 entities: %v\n", numThreeEntities)
-	fmt.Printf("    Number of documents with 4+ entity:  %v\n", numFourOrMoreEntities)
+	log.Printf("Summary - Number of documents with 1 entity:   %v\n", numOneEntity)
+	log.Printf("Summary - Number of documents with 2 entities: %v\n", numTwoEntities)
+	log.Printf("Summary - Number of documents with 3 entities: %v\n", numThreeEntities)
+	log.Printf("Summary - Number of documents with 4+ entity:  %v\n", numFourOrMoreEntities)
 
 	return &g
 }

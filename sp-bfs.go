@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -43,16 +44,16 @@ type PathConfig struct {
 
 // display the path config
 func (c *PathConfig) display() {
-	fmt.Println("    Number of input files:      ", len(c.InputFiles))
-	fmt.Println("    Number of data sources:     ", len(c.Entities.DataSources))
-	fmt.Println("    Number of entities to skip: ", len(c.Entities.Skip))
-	fmt.Println("    Maximum depth:              ", c.Output.MaxDepth)
-	fmt.Println("    Find all paths:             ", c.Output.FindAllPaths)
-	fmt.Println("    Output file:                ", c.Output.OutputFile)
-	fmt.Println("    Delimiter:                  ", c.Output.OutputDelimiter)
-	fmt.Println("    Path delimiter:             ", c.Output.PathDelimiter)
-	fmt.Println("    Web-app link template:      ", c.Output.WebAppLink)
-	fmt.Println("    Unipartite graph file:      ", c.Output.UnipartiteFile)
+	log.Println("Parameter - Number of input files:      ", len(c.InputFiles))
+	log.Println("Parameter - Number of data sources:     ", len(c.Entities.DataSources))
+	log.Println("Parameter - Number of entities to skip: ", len(c.Entities.Skip))
+	log.Println("Parameter - Maximum depth:              ", c.Output.MaxDepth)
+	log.Println("Parameter - Find all paths:             ", c.Output.FindAllPaths)
+	log.Println("Parameter - Output file:                ", c.Output.OutputFile)
+	log.Println("Parameter - Delimiter:                  ", c.Output.OutputDelimiter)
+	log.Println("Parameter - Path delimiter:             ", c.Output.PathDelimiter)
+	log.Println("Parameter - Web-app link template:      ", c.Output.WebAppLink)
+	log.Println("Parameter - Unipartite graph file:      ", c.Output.UnipartiteFile)
 }
 
 // readConfig reads the JSON configuration from a file
@@ -224,13 +225,13 @@ func findAndRecordShortestPaths(g *Graph,
 		numPathsFound = len(paths)
 
 		if len(paths) == 0 {
-			fmt.Printf("[!] Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
+			log.Fatalf("Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
 		} else {
 			for _, path := range paths {
 				result := NewPathResult(source, sourceDataSource,
 					destination, destinationDataSource,
 					path.flatten(), outputConfig.WebAppLink)
-				fmt.Printf("[>] %v\n", result.display())
+				log.Printf("%v\n", result.display())
 				fmt.Fprintln(outputFile, result.toString(outputConfig.OutputDelimiter, outputConfig.PathDelimiter))
 			}
 		}
@@ -240,7 +241,7 @@ func findAndRecordShortestPaths(g *Graph,
 		found, vertex := g.Bfs(source, destination, outputConfig.MaxDepth)
 
 		if !found {
-			fmt.Printf("[!] Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
+			log.Fatalf("Vertex %v was deemed reachable from %v, but no path!\n", destination, source)
 		} else {
 
 			// Found 1 path
@@ -252,7 +253,7 @@ func findAndRecordShortestPaths(g *Graph,
 				vertex.flatten(), outputConfig.WebAppLink)
 
 			// Display the result
-			fmt.Printf("[>] %v\n", result.display())
+			log.Printf("%v\n", result.display())
 
 			// Add the result to the file
 			fmt.Fprintln(outputFile, result.toString(outputConfig.OutputDelimiter, outputConfig.PathDelimiter))
@@ -292,7 +293,7 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 	// Open the output CSV file for writing
 	outputFile, err := os.Create(outputConfig.OutputFile)
 	if err != nil {
-		log.Fatalf("[!] Unable to open output file %v for writing: %v\n", outputConfig.OutputFile, err)
+		log.Fatalf("Unable to open output file %v for writing: %v\n", outputConfig.OutputFile, err)
 	}
 	defer outputFile.Close()
 
@@ -313,7 +314,7 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 	for i := 0; i < len(entityConfig.DataSources)-1; i++ {
 		for j := i + 1; j < len(entityConfig.DataSources); j++ {
 
-			fmt.Printf("[>] Checking connections for data sources %v <--> %v\n",
+			log.Printf("Checking connections for data sources %v <--> %v\n",
 				entityConfig.DataSources[i].Name,
 				entityConfig.DataSources[j].Name)
 
@@ -347,7 +348,7 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 					// Provide feedback on long-running jobs
 					if numPairsProcessed%10000 == 0 {
-						fmt.Printf("[>] Processed %v pairs of %v\n", numPairsProcessed, totalPairs)
+						log.Printf("Processed %v pairs of %v\n", numPairsProcessed, totalPairs)
 					}
 
 					// If the destination is reachable from the source, then find and record the shortest path
@@ -371,11 +372,10 @@ func performBfs(g *Graph, entityConfig EntityConfig, outputConfig OutputConfig) 
 
 		}
 
-		fmt.Println("[>] Summary:")
-		fmt.Printf("    Total number of entity pairs:   %v\n", totalPairs)
-		fmt.Printf("    Number of pairs with paths:     %v\n", numPairsWithPaths)
-		fmt.Printf("    Percentage of pairs with paths: %.2f %%\n", 100.0*float32(numPairsWithPaths)/float32(totalPairs))
-		fmt.Printf("    Total number of paths found:    %v\n", numPathsFound)
+		log.Printf("Summary - Total number of entity pairs:   %v\n", totalPairs)
+		log.Printf("Summary - Number of pairs with paths:     %v\n", numPairsWithPaths)
+		log.Printf("Summary - Percentage of pairs with paths: %.2f %%\n", 100.0*float32(numPairsWithPaths)/float32(totalPairs))
+		log.Printf("Summary - Total number of paths found:    %v\n", numPathsFound)
 	}
 
 }
@@ -385,49 +385,54 @@ func PerformBfsFromConfig(configFilepath string) {
 
 	// Read the JSON configuration
 	t0 := time.Now()
-	fmt.Println("[>] Reading configuration ...")
+	log.Println("Reading configuration ...")
 	config := readConfig(configFilepath)
 	config.display()
 
 	// Check there are at least two data sources to find connections
 	if len(config.Entities.DataSources) < 2 {
-		fmt.Println("[!] At least two data sources must be specified in the config")
+		log.Println("At least two data sources must be specified in the config")
 		return
 	}
 
 	// Read the entity-document relationships from file
-	fmt.Println("[>] Reading entity-document graph from file ...")
+	log.Println("Reading entity-document graph from file ...")
 	t1 := time.Now()
 	connections := ReadEntityDocumentGraph(config.InputFiles, SliceToSet(config.Entities.Skip))
-	fmt.Printf("[>] Entity-document graph read in %v\n", time.Now().Sub(t1))
+	log.Printf("Entity-document graph read in %v\n", time.Now().Sub(t1))
 
 	// Convert the bipartite graph to a unipartite graph
 	t2 := time.Now()
 	graph := BipartiteToUnipartite(connections)
-	fmt.Printf("[>] Graph has %v vertices\n", len(graph.Nodes))
-	fmt.Printf("[>] Bipartite to unipartite conversion completed in %v\n", time.Now().Sub(t2))
+	log.Printf("Graph has %v vertices\n", len(graph.Nodes))
+	log.Printf("Bipartite to unipartite conversion completed in %v\n", time.Now().Sub(t2))
 
 	// Write the unipartite graph to file (if required)
 	if len(config.Output.UnipartiteFile) > 0 {
-		fmt.Printf("[>] Writing unipartite graph to file: %v\n", config.Output.UnipartiteFile)
+		log.Printf("Writing unipartite graph to file: %v\n", config.Output.UnipartiteFile)
 		graph.WriteUndirectedEdgeList(config.Output.UnipartiteFile, config.Output.PathDelimiter)
 	}
 
 	// Perform shortest path analysis
-	fmt.Printf("[>] Performing shortest path analysis on %v vertex pairs\n",
+	log.Printf("Performing shortest path analysis on %v vertex pairs\n",
 		totalNumberOfPairs(&config.Entities.DataSources))
 	t3 := time.Now()
 	performBfs(graph, config.Entities, config.Output)
-	fmt.Printf("[>] Shortest path analysis completed in %v\n", time.Now().Sub(t3))
+	log.Printf("Shortest path analysis completed in %v\n", time.Now().Sub(t3))
 
 	// Complete
-	fmt.Printf("[>] Results located at: %v\n", config.Output.OutputFile)
-	fmt.Printf("[>] Total time taken: %v\n", time.Now().Sub(t0))
+	log.Printf("Results located at: %v\n", config.Output.OutputFile)
+	log.Printf("Total time taken: %v\n", time.Now().Sub(t0))
 }
 
 func main() {
-	println("Shortest path calculator using a bipartite to unipartite transformation and the")
-	println("Breadth First Search and exhaustive search algorithms with reachable vertex optimisation step")
 
-	PerformBfsFromConfig("./config.json")
+	// Command line arguments
+	configFilepath := flag.String("config", "config.json", "Location of the JSON config file")
+	flag.Parse()
+
+	log.Println("Shortest path calculator using a bipartite to unipartite transformation and the")
+	log.Println("Breadth First Search and exhaustive search algorithms with reachable vertex optimisation step")
+
+	PerformBfsFromConfig(*configFilepath)
 }
